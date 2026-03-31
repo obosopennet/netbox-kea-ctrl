@@ -3,11 +3,20 @@
 {% block content %}
 <div class="container">
   <h1>{{ object.name }}</h1>
+
+  <p>
+    <a href="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_edit' pk=object.pk %}">Edit</a>
+  </p>
+
   <ul>
-    <li>Description: {{ object.description|default:"-" }}</li>
-    <li>Family: {{ object.family }}</li>
-    <li>Server tag: {{ object.server_tag }}</li>
-    <li>Enabled: {{ object.enabled }}</li>
+    <li><strong>Name:</strong> {{ object.name }}</li>
+    <li><strong>Description:</strong> {{ object.description|default:"-" }}</li>
+    <li><strong>Family:</strong> {{ object.family }}</li>
+    <li><strong>Server tag:</strong> {{ object.server_tag }}</li>
+    <li><strong>Enabled:</strong> {{ object.enabled }}</li>
+    <li><strong>Option data:</strong></li>
   </ul>
+
+  <pre>{{ object.option_data|default:"" }}</pre>
 </div>
 {% endblock %}
