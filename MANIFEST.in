@@ -1,1 +1,2 @@
-
+recursive-include netbox_kea_ctrl/templates *
+recursive-include netbox_kea_ctrl/migrations *
