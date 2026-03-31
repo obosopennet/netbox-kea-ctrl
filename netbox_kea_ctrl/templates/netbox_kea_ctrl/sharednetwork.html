@@ -1,0 +1,13 @@
+{% extends 'base/layout.html' %}
+
+{% block content %}
+<div class="container">
+  <h1>{{ object.name }}</h1>
+  <ul>
+    <li>Description: {{ object.description|default:"-" }}</li>
+    <li>Family: {{ object.family }}</li>
+    <li>Server tag: {{ object.server_tag }}</li>
+    <li>Enabled: {{ object.enabled }}</li>
+  </ul>
+</div>
+{% endblock %}
