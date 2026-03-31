@@ -1,0 +1,24 @@
+{% extends 'base/layout.html' %}
+
+{% block content %}
+<div class="container">
+  <h1>HA Groups</h1>
+
+  <p>
+    <a href="{% url 'plugins:netbox_kea_ctrl:keahagroup_add' %}">Add HA Group</a>
+  </p>
+
+  <ul>
+    {% for obj in object_list %}
+      <li>
+        <a href="{% url 'plugins:netbox_kea_ctrl:keahagroup' pk=obj.pk %}">
+          {{ obj.name }}
+        </a>
+        - {{ obj.mode }} - enabled={{ obj.enabled }}
+      </li>
+    {% empty %}
+      <li>No HA groups found</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
