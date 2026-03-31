@@ -1,2 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "netbox-kea-ctrl"
+version = "0.1.0"
+description = "NetBox plugin for managing Kea DHCP configuration, validation, publishing, and HA operations"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+authors = [
+  { name = "OBOS Nett" }
+]
+requires-python = ">=3.10"
+dependencies = [
+  "PyYAML>=6.0",
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Framework :: Django",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["netbox_kea_ctrl*"]
