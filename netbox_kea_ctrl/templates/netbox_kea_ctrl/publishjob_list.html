@@ -1,0 +1,20 @@
+{% extends 'base/layout.html' %}
+
+{% block content %}
+<div class="container">
+  <h1>Publish Jobs</h1>
+
+  <ul>
+    {% for obj in object_list %}
+      <li>
+        <a href="{% url 'plugins:netbox_kea_ctrl:keapublishjob' pk=obj.pk %}">
+          {{ obj }}
+        </a>
+        - status={{ obj.status }}
+      </li>
+    {% empty %}
+      <li>No publish jobs found</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
