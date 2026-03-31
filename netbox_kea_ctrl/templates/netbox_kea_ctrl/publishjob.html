@@ -1,0 +1,28 @@
+{% extends 'base/layout.html' %}
+
+{% block content %}
+<div class="container">
+  <h1>Publish Job {{ object.pk }}</h1>
+
+  <ul>
+    <li><strong>Status:</strong> {{ object.status }}</li>
+    <li><strong>Server tag:</strong> {{ object.server_tag_name|default:"-" }}</li>
+    <li><strong>Created:</strong> {{ object.created }}</li>
+    <li><strong>Created by:</strong> {{ object.created_by|default:"-" }}</li>
+    <li><strong>Last updated:</strong> {{ object.last_updated }}</li>
+    <li><strong>Summary:</strong> {{ object.summary|default:"-" }}</li>
+  </ul>
+
+  <h2>Validation Output</h2>
+  <pre>{{ object.validation_output|default:"{}" }}</pre>
+
+  <h2>Generated Payload</h2>
+  <pre>{{ object.generated_payload|default:"{}" }}</pre>
+
+  <h2>Publish Output</h2>
+  <pre>{{ object.publish_output|default:"{}" }}</pre>
+
+  <h2>Error Log</h2>
+  <pre>{{ object.error_log|default:"" }}</pre>
+</div>
+{% endblock %}
