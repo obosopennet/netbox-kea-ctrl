@@ -3,12 +3,18 @@
 {% block content %}
 <div class="container">
   <h1>Shared Networks</h1>
+
+  <p>
+    <a href="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_add' %}">Add Shared Network</a>
+  </p>
+
   <ul>
     {% for obj in object_list %}
       <li>
         <a href="{% url 'plugins:netbox_kea_ctrl:keasharednetwork' pk=obj.pk %}">
           {{ obj.name }}
         </a>
+        - {{ obj.family }} - {{ obj.server_tag }} - enabled={{ obj.enabled }}
       </li>
     {% empty %}
       <li>No shared networks found</li>
