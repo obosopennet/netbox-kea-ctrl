@@ -1,0 +1,26 @@
+{% extends 'base/layout.html' %}
+
+{% block content %}
+<div class="container">
+  <h1>Kea Dashboard</h1>
+
+  <ul>
+    <li>Shared Networks: {{ shared_network_count }}</li>
+    <li>Server Tags: {{ server_tag_count }}</li>
+    <li>HA Groups: {{ ha_group_count }}</li>
+  </ul>
+
+  <h2>Recent Publish Jobs</h2>
+  <ul>
+    {% for job in recent_jobs %}
+      <li>
+        <a href="{% url 'plugins:netbox_kea_ctrl:keapublishjob' pk=job.pk %}">
+          {{ job }}
+        </a>
+      </li>
+    {% empty %}
+      <li>No jobs yet</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
