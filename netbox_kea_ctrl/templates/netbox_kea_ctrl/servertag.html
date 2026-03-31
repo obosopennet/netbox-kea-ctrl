@@ -1,0 +1,20 @@
+{% extends 'base/layout.html' %}
+
+{% block content %}
+<div class="container">
+  <h1>{{ object.name }}</h1>
+
+  <p>
+    <a href="{% url 'plugins:netbox_kea_ctrl:keaservertag_edit' pk=object.pk %}">Edit</a>
+  </p>
+
+  <ul>
+    <li><strong>Name:</strong> {{ object.name }}</li>
+    <li><strong>Description:</strong> {{ object.description|default:"-" }}</li>
+    <li><strong>Enabled:</strong> {{ object.enabled }}</li>
+    <li><strong>Family:</strong> {{ object.family }}</li>
+    <li><strong>HA Group:</strong> {{ object.ha_group|default:"-" }}</li>
+    <li><strong>Configuration Backend Target:</strong> {{ object.configuration_backend_target|default:"-" }}</li>
+  </ul>
+</div>
+{% endblock %}
