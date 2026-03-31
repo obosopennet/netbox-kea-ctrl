@@ -5,8 +5,8 @@ class NetBoxKeaCtrlConfig(PluginConfig):
     verbose_name = "NetBox Kea Ctrl"
     description = "NetBox plugin for Kea DHCP validation, publishing, and HA operations"
     version = "0.1.0"
-    author = "Your Team"
-    author_email = "netops@example.com"
+    author = "OBOS Nett"
+    author_email = "obosnett@obos.no"
     base_url = "kea-ctrl"
     required_settings = []
     default_settings = {
