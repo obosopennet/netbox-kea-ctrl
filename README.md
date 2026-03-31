@@ -31,3 +31,31 @@ Install directly from GitHub:
 
 ```bash
 pip install git+https://github.com/<org>/netbox-kea-ctrl.git
+```
+
+# NetBox configuration
+
+Add the plugin to your NetBox configuration:
+
+
+NetBox configuration
+
+Add the plugin to your NetBox configuration:
+
+```
+PLUGINS = ["netbox_kea_ctrl"]
+
+PLUGINS_CONFIG = {
+    "netbox_kea_ctrl": {
+        "enable_ha_actions": True,
+        "default_publisher": "dry-run",
+    }
+}
+```
+
+## Migrations
+
+```bash
+python manage.py migrate
+python manage.py collectstatic --no-input
+```
