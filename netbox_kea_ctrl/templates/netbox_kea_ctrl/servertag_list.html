@@ -1,0 +1,24 @@
+{% extends 'base/layout.html' %}
+
+{% block content %}
+<div class="container">
+  <h1>Server Tags</h1>
+
+  <p>
+    <a href="{% url 'plugins:netbox_kea_ctrl:keaservertag_add' %}">Add Server Tag</a>
+  </p>
+
+  <ul>
+    {% for obj in object_list %}
+      <li>
+        <a href="{% url 'plugins:netbox_kea_ctrl:keaservertag' pk=obj.pk %}">
+          {{ obj.name }}
+        </a>
+        - {{ obj.family }} - HA={{ obj.ha_group|default:"-" }} - enabled={{ obj.enabled }}
+      </li>
+    {% empty %}
+      <li>No server tags found</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
