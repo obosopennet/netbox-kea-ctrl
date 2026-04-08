@@ -2,30 +2,58 @@
 
 {% block content %}
 <div class="container">
-  <h1>Kea Dashboard</h1>
+  <h1>Kea Control</h1>
 
-  <ul>
-    <li>Shared Networks: {{ shared_network_count }}</li>
-    <li>Server Tags: {{ server_tag_count }}</li>
-    <li>HA Groups: {{ ha_group_count }}</li>
-  </ul>
+  <div class="row">
 
-  <p>
-    <a href="{% url 'plugins:netbox_kea_ctrl:prefix_validation' %}">Go to Prefix Validation</a>
-  </p>
+    <div class="col-md-6">
+      <h3>Infrastructure</h3>
+      <ul>
+        <li>
+          <a href="{% url 'plugins:netbox_kea_ctrl:keaserver_list' %}">
+            Kea Servers
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'plugins:netbox_kea_ctrl:keahagroup_list' %}">
+            HA Groups
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'plugins:netbox_kea_ctrl:keaservertag_list' %}">
+            Server Tags
+          </a>
+        </li>
+      </ul>
+    </div>
 
-  <h2>Recent Publish Jobs</h2>
-  <ul>
-    {% for job in recent_jobs %}
-      <li>
-        <a href="{% url 'plugins:netbox_kea_ctrl:keapublishjob' pk=job.pk %}">
-          {{ job }}
-        </a>
-        - {{ job.status }}
-      </li>
-    {% empty %}
-      <li>No jobs yet</li>
-    {% endfor %}
-  </ul>
+    <div class="col-md-6">
+      <h3>Configuration</h3>
+      <ul>
+        <li>
+          <a href="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_list' %}">
+            Shared Networks
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'plugins:netbox_kea_ctrl:prefix_validation' %}">
+            Prefix Validation
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="col-md-6">
+      <h3>Operations</h3>
+      <ul>
+        <li>
+          <a href="{% url 'plugins:netbox_kea_ctrl:keapublishjob_list' %}">
+            Publish Jobs
+          </a>
+        </li>
+      </ul>
+    </div>
+
+  </div>
 </div>
 {% endblock %}
