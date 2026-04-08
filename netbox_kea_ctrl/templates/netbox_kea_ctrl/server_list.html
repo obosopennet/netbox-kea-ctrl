@@ -1,0 +1,25 @@
+{% extends 'base/layout.html' %}
+
+{% block content %}
+<div class="container">
+  <h1>Kea Servers</h1>
+
+  <p>
+    <a href="{% url 'plugins:netbox_kea_ctrl:keaserver_add' %}">Add Kea Server</a>
+  </p>
+
+  <ul>
+    {% for obj in object_list %}
+      <li>
+        <a href="{% url 'plugins:netbox_kea_ctrl:keaserver' pk=obj.pk %}">{{ obj.name }}</a>
+        - {{ obj.service }}
+        - {{ obj.api_url }}
+        - tag={{ obj.discovered_server_tag|default:"-" }}
+        - enabled={{ obj.enabled }}
+      </li>
+    {% empty %}
+      <li>No Kea servers found</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
