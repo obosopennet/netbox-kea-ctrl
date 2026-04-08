@@ -21,7 +21,14 @@ class KeaServerView(DetailView):
     template_name = "netbox_kea_ctrl/server.html"
 
 
-class KeaServerEditView(CreateView, UpdateView):
+class KeaServerCreateView(CreateView):
+    model = KeaServer
+    form_class = KeaServerForm
+    template_name = "netbox_kea_ctrl/object_edit.html"
+    success_url = reverse_lazy("plugins:netbox_kea_ctrl:keaserver_list")
+
+
+class KeaServerEditView(UpdateView):
     model = KeaServer
     form_class = KeaServerForm
     template_name = "netbox_kea_ctrl/object_edit.html"
