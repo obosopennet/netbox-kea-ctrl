@@ -25,6 +25,14 @@ from .views.publish_jobs import (
     KeaPublishJobView,
 )
 
+from .views.servers import (
+    KeaServerListView,
+    KeaServerView,
+    KeaServerEditView,
+    KeaServerDiscoverView,
+    KeaServerTestConnectionView,
+)
+
 app_name = "netbox_kea_ctrl"
 
 urlpatterns = [
