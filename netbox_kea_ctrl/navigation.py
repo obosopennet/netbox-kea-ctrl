@@ -25,6 +25,10 @@ menu_items = (
         link="plugins:netbox_kea_ctrl:keapublishjob_list",
         link_text="Publish Jobs",
     ),
+    PluginMenuItem(
+         link="plugins:netbox_kea_ctrl:keaserver_list",
+         link_text="Kea Servers",
+),
 )
 
 menu = PluginMenu(
