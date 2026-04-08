@@ -9,7 +9,7 @@ class NetBoxKeaCtrlConfig(PluginConfig):
     author = "OBOS Nett"
     base_url = "kea-ctrl"
 
-    menu = "navigation.menu"
+    menu = "netbox_kea_ctrl.navigation.menu"
 
     required_settings = []
     default_settings = {
