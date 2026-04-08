@@ -8,6 +8,7 @@ class NetBoxKeaCtrlConfig(PluginConfig):
     version = "0.1.0"
     author = "OBOS Nett"
     base_url = "kea-ctrl"
+    api_url = "plugins/kea-ctrl"
 
     required_settings = []
     default_settings = {
