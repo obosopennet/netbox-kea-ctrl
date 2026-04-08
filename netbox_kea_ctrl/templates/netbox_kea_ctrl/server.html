@@ -2,74 +2,224 @@
 
 {% block content %}
 <div class="container">
-  <h1>{{ object.name }}</h1>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">{{ object.name }}</h1>
+    <div>
+      <a class="btn btn-primary" href="{% url 'plugins:netbox_kea_ctrl:keaserver_edit' pk=object.pk %}">
+        Edit
+      </a>
+    </div>
+  </div>
 
-  <p>
-    <a href="{% url 'plugins:netbox_kea_ctrl:keaserver_edit' pk=object.pk %}">Edit</a>
-  </p>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-header">
+          <strong>Server Details</strong>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <tbody>
+              <tr>
+                <th style="width: 35%;">API URL</th>
+                <td>{{ object.api_url }}</td>
+              </tr>
+              <tr>
+                <th>Service</th>
+                <td>{{ object.service }}</td>
+              </tr>
+              <tr>
+                <th>Role</th>
+                <td>{{ object.role }}</td>
+              </tr>
+              <tr>
+                <th>HA Group</th>
+                <td>{{ object.ha_group|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Verify TLS</th>
+                <td>{{ object.verify_tls }}</td>
+              </tr>
+              <tr>
+                <th>Last seen</th>
+                <td>{{ object.last_seen|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Discovered server tag</th>
+                <td>{{ object.discovered_server_tag|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Last error</th>
+                <td>{{ object.last_error|default:"-" }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-  <h2>Server</h2>
-  <ul>
-    <li><strong>API URL:</strong> {{ object.api_url }}</li>
-    <li><strong>Service:</strong> {{ object.service }}</li>
-    <li><strong>Role:</strong> {{ object.role }}</li>
-    <li><strong>HA Group:</strong> {{ object.ha_group|default:"-" }}</li>
-    <li><strong>Verify TLS:</strong> {{ object.verify_tls }}</li>
-    <li><strong>Last seen:</strong> {{ object.last_seen|default:"-" }}</li>
-    <li><strong>Discovered server tag:</strong> {{ object.discovered_server_tag|default:"-" }}</li>
-    <li><strong>Last error:</strong> {{ object.last_error|default:"-" }}</li>
-  </ul>
+      <div class="mb-3">
+        <form method="post" action="{% url 'plugins:netbox_kea_ctrl:keaserver_discover' pk=object.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-success">Discover from Kea</button>
+        </form>
+      </div>
+    </div>
 
-  <form method="post" action="{% url 'plugins:netbox_kea_ctrl:keaserver_discover' pk=object.pk %}" style="margin-bottom: 1rem;">
-    {% csrf_token %}
-    <button type="submit">Discover from Kea</button>
-  </form>
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-header">
+          <strong>Runtime Status</strong>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <tbody>
+              <tr>
+                <th style="width: 35%;">Result</th>
+                <td>{{ status_summary.result|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>PID</th>
+                <td>{{ status_summary.pid|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Uptime</th>
+                <td>{{ status_summary.uptime|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Reload</th>
+                <td>{{ status_summary.reload|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Socket status</th>
+                <td>{{ status_summary.socket_status|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>DHCP state</th>
+                <td>
+                  <pre class="mb-0">{{ status_summary.dhcp_state|default:"{}" }}</pre>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <h2>Runtime Status</h2>
-  <ul>
-    <li><strong>Result:</strong> {{ status_summary.result|default:"-" }}</li>
-    <li><strong>PID:</strong> {{ status_summary.pid|default:"-" }}</li>
-    <li><strong>Uptime:</strong> {{ status_summary.uptime|default:"-" }}</li>
-    <li><strong>Reload:</strong> {{ status_summary.reload|default:"-" }}</li>
-    <li><strong>Socket status:</strong> {{ status_summary.socket_status|default:"-" }}</li>
-    <li><strong>DHCP state:</strong></li>
-  </ul>
-  <pre>{{ status_summary.dhcp_state|default:"{}" }}</pre>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-header">
+          <strong>HA Status</strong>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <tbody>
+              <tr>
+                <th style="width: 35%;">HA mode</th>
+                <td>{{ ha_summary.ha_mode|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>This server</th>
+                <td>{{ ha_summary.this_server_name|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Local role</th>
+                <td>{{ ha_summary.local_role|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Local state</th>
+                <td>{{ ha_summary.local_state|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Peer name</th>
+                <td>{{ ha_summary.peer_name|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Peer role</th>
+                <td>{{ ha_summary.peer_role|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Peer state</th>
+                <td>{{ ha_summary.peer_state|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Communication state</th>
+                <td>{{ ha_summary.communication_state|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Scopes</th>
+                <td>
+                  {% if ha_summary.scopes %}
+                    {{ ha_summary.scopes|join:", " }}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
-  <h2>HA Status</h2>
-  <ul>
-    <li><strong>HA mode:</strong> {{ ha_summary.ha_mode|default:"-" }}</li>
-    <li><strong>This server:</strong> {{ ha_summary.this_server_name|default:"-" }}</li>
-    <li><strong>Local role:</strong> {{ ha_summary.local_role|default:"-" }}</li>
-    <li><strong>Local state:</strong> {{ ha_summary.local_state|default:"-" }}</li>
-    <li><strong>Peer name:</strong> {{ ha_summary.peer_name|default:"-" }}</li>
-    <li><strong>Peer role:</strong> {{ ha_summary.peer_role|default:"-" }}</li>
-    <li><strong>Peer state:</strong> {{ ha_summary.peer_state|default:"-" }}</li>
-    <li><strong>Communication state:</strong> {{ ha_summary.communication_state|default:"-" }}</li>
-    <li><strong>Scopes:</strong> {{ ha_summary.scopes|join:", "|default:"-" }}</li>
-  </ul>
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-header">
+          <strong>Config Summary</strong>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <tbody>
+              <tr>
+                <th style="width: 35%;">Config hash</th>
+                <td>{{ config_summary.hash|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Subnet4 count</th>
+                <td>{{ config_summary.subnet4_count }}</td>
+              </tr>
+              <tr>
+                <th>Shared network4 count</th>
+                <td>{{ config_summary.shared_network4_count }}</td>
+              </tr>
+              <tr>
+                <th>Hooks</th>
+                <td>
+                  {% if config_summary.hooks %}
+                    {{ config_summary.hooks|join:", " }}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <h2>Config Summary</h2>
-  <ul>
-    <li><strong>Config hash:</strong> {{ config_summary.hash|default:"-" }}</li>
-    <li><strong>Subnet4 count:</strong> {{ config_summary.subnet4_count }}</li>
-    <li><strong>Shared network4 count:</strong> {{ config_summary.shared_network4_count }}</li>
-    <li><strong>Hooks:</strong> {{ config_summary.hooks|join:", "|default:"-" }}</li>
-  </ul>
+  <div class="card mb-3">
+    <div class="card-header">
+      <strong>Raw Data</strong>
+    </div>
+    <div class="card-body">
+      <details class="mb-3">
+        <summary><strong>Raw Last Status</strong></summary>
+        <pre class="mt-2">{{ object.last_status|default:"{}" }}</pre>
+      </details>
 
-  <details style="margin-top: 2rem;">
-    <summary><strong>Raw Last Status</strong></summary>
-    <pre>{{ object.last_status|default:"{}" }}</pre>
-  </details>
+      <details class="mb-3">
+        <summary><strong>Raw HA Info</strong></summary>
+        <pre class="mt-2">{{ object.discovered_ha_info|default:"{}" }}</pre>
+      </details>
 
-  <details style="margin-top: 1rem;">
-    <summary><strong>Raw HA Info</strong></summary>
-    <pre>{{ object.discovered_ha_info|default:"{}" }}</pre>
-  </details>
-
-  <details style="margin-top: 1rem;">
-    <summary><strong>Raw Config</strong></summary>
-    <pre>{{ object.discovered_config|default:"{}" }}</pre>
-  </details>
+      <details>
+        <summary><strong>Raw Config</strong></summary>
+        <pre class="mt-2">{{ object.discovered_config|default:"{}" }}</pre>
+      </details>
+    </div>
+  </div>
 </div>
 {% endblock %}
