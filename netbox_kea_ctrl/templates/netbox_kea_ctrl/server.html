@@ -1,0 +1,36 @@
+{% extends 'base/layout.html' %}
+
+{% block content %}
+<div class="container">
+  <h1>{{ object.name }}</h1>
+
+  <p>
+    <a href="{% url 'plugins:netbox_kea_ctrl:keaserver_edit' pk=object.pk %}">Edit</a>
+  </p>
+
+  <ul>
+    <li><strong>API URL:</strong> {{ object.api_url }}</li>
+    <li><strong>Service:</strong> {{ object.service }}</li>
+    <li><strong>Role:</strong> {{ object.role }}</li>
+    <li><strong>HA Group:</strong> {{ object.ha_group|default:"-" }}</li>
+    <li><strong>Verify TLS:</strong> {{ object.verify_tls }}</li>
+    <li><strong>Last seen:</strong> {{ object.last_seen|default:"-" }}</li>
+    <li><strong>Discovered server tag:</strong> {{ object.discovered_server_tag|default:"-" }}</li>
+    <li><strong>Last error:</strong> {{ object.last_error|default:"-" }}</li>
+  </ul>
+
+  <form method="post" action="{% url 'plugins:netbox_kea_ctrl:keaserver_discover' pk=object.pk %}" style="margin-bottom: 1rem;">
+    {% csrf_token %}
+    <button type="submit">Discover from Kea</button>
+  </form>
+
+  <h2>Last Status</h2>
+  <pre>{{ object.last_status|default:"{}" }}</pre>
+
+  <h2>Discovered HA Info</h2>
+  <pre>{{ object.discovered_ha_info|default:"{}" }}</pre>
+
+  <h2>Discovered Config</h2>
+  <pre>{{ object.discovered_config|default:"{}" }}</pre>
+</div>
+{% endblock %}
