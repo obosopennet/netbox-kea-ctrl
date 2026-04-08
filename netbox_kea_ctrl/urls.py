@@ -28,6 +28,7 @@ from .views.publish_jobs import (
 from .views.servers import (
     KeaServerListView,
     KeaServerView,
+    KeaServerCreateView,
     KeaServerEditView,
     KeaServerDiscoverView,
     KeaServerTestConnectionView,
