@@ -8,6 +8,7 @@
     <a href="{% url 'plugins:netbox_kea_ctrl:keaserver_edit' pk=object.pk %}">Edit</a>
   </p>
 
+  <h2>Server</h2>
   <ul>
     <li><strong>API URL:</strong> {{ object.api_url }}</li>
     <li><strong>Service:</strong> {{ object.service }}</li>
@@ -24,13 +25,51 @@
     <button type="submit">Discover from Kea</button>
   </form>
 
-  <h2>Last Status</h2>
-  <pre>{{ object.last_status|default:"{}" }}</pre>
+  <h2>Runtime Status</h2>
+  <ul>
+    <li><strong>Result:</strong> {{ status_summary.result|default:"-" }}</li>
+    <li><strong>PID:</strong> {{ status_summary.pid|default:"-" }}</li>
+    <li><strong>Uptime:</strong> {{ status_summary.uptime|default:"-" }}</li>
+    <li><strong>Reload:</strong> {{ status_summary.reload|default:"-" }}</li>
+    <li><strong>Socket status:</strong> {{ status_summary.socket_status|default:"-" }}</li>
+    <li><strong>DHCP state:</strong></li>
+  </ul>
+  <pre>{{ status_summary.dhcp_state|default:"{}" }}</pre>
 
-  <h2>Discovered HA Info</h2>
-  <pre>{{ object.discovered_ha_info|default:"{}" }}</pre>
+  <h2>HA Status</h2>
+  <ul>
+    <li><strong>HA mode:</strong> {{ ha_summary.ha_mode|default:"-" }}</li>
+    <li><strong>This server:</strong> {{ ha_summary.this_server_name|default:"-" }}</li>
+    <li><strong>Local role:</strong> {{ ha_summary.local_role|default:"-" }}</li>
+    <li><strong>Local state:</strong> {{ ha_summary.local_state|default:"-" }}</li>
+    <li><strong>Peer name:</strong> {{ ha_summary.peer_name|default:"-" }}</li>
+    <li><strong>Peer role:</strong> {{ ha_summary.peer_role|default:"-" }}</li>
+    <li><strong>Peer state:</strong> {{ ha_summary.peer_state|default:"-" }}</li>
+    <li><strong>Communication state:</strong> {{ ha_summary.communication_state|default:"-" }}</li>
+    <li><strong>Scopes:</strong> {{ ha_summary.scopes|join:", "|default:"-" }}</li>
+  </ul>
 
-  <h2>Discovered Config</h2>
-  <pre>{{ object.discovered_config|default:"{}" }}</pre>
+  <h2>Config Summary</h2>
+  <ul>
+    <li><strong>Config hash:</strong> {{ config_summary.hash|default:"-" }}</li>
+    <li><strong>Subnet4 count:</strong> {{ config_summary.subnet4_count }}</li>
+    <li><strong>Shared network4 count:</strong> {{ config_summary.shared_network4_count }}</li>
+    <li><strong>Hooks:</strong> {{ config_summary.hooks|join:", "|default:"-" }}</li>
+  </ul>
+
+  <details style="margin-top: 2rem;">
+    <summary><strong>Raw Last Status</strong></summary>
+    <pre>{{ object.last_status|default:"{}" }}</pre>
+  </details>
+
+  <details style="margin-top: 1rem;">
+    <summary><strong>Raw HA Info</strong></summary>
+    <pre>{{ object.discovered_ha_info|default:"{}" }}</pre>
+  </details>
+
+  <details style="margin-top: 1rem;">
+    <summary><strong>Raw Config</strong></summary>
+    <pre>{{ object.discovered_config|default:"{}" }}</pre>
+  </details>
 </div>
 {% endblock %}
