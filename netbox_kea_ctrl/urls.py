@@ -62,4 +62,12 @@ urlpatterns = [
 
     path("publish-jobs/", KeaPublishJobListView.as_view(), name="keapublishjob_list"),
     path("publish-jobs/<int:pk>/", KeaPublishJobView.as_view(), name="keapublishjob"),
+
+    path("servers/", KeaServerListView.as_view(), name="keaserver_list"),
+    path("servers/add/", KeaServerEditView.as_view(), name="keaserver_add"),
+    path("servers/<int:pk>/", KeaServerView.as_view(), name="keaserver"),
+    path("servers/<int:pk>/edit/", KeaServerEditView.as_view(), name="keaserver_edit"),
+    path("servers/<int:pk>/discover/", KeaServerDiscoverView.as_view(), name="keaserver_discover"),
+    path("servers/<int:pk>/test/", KeaServerTestConnectionView.as_view(), name="keaserver_test"),
+
 ]
