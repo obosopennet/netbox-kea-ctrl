@@ -1,16 +1,22 @@
 from django.contrib import messages
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
-from netbox_kea_ctrl.forms import KeaSharedNetworkCreateForm, KeaSharedNetworkEditForm
+from netbox_kea_ctrl.forms import (
+    KeaSharedNetworkCreateForm,
+    KeaSharedNetworkEditForm,
+    PrefixAssignForm,
+)
 from netbox_kea_ctrl.models import KeaPublishJob, KeaSharedNetwork
+from netbox_kea_ctrl.services.prefix_assignment import PrefixAssignmentService
 from netbox_kea_ctrl.services.shared_network_publisher import (
     SharedNetworkPublisher,
     SharedNetworkPublishError,
 )
 from netbox_kea_ctrl.services.shared_network_verifier import SharedNetworkVerifier
+from ipam.models import Prefix
 
 
 class KeaSharedNetworkListView(ListView):
@@ -33,7 +39,10 @@ class KeaSharedNetworkView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        service = PrefixAssignmentService()
+
         context["publish_targets"] = self.object.get_publish_targets()
+        context["assigned_prefixes"] = service.get_prefixes_for_shared_network(self.object)
         return context
 
 
@@ -98,17 +107,11 @@ class KeaSharedNetworkPushView(View):
 
             if kea_ok:
                 job.status = "success"
-                messages.success(
-                    request,
-                    f"Shared Network '{obj.name}' pushed successfully to {target.name}."
-                )
+                messages.success(request, f"Shared Network '{obj.name}' pushed successfully to {target.name}.")
             else:
                 job.status = "failed"
                 job.error_log = "\n".join(filter(None, kea_errors))
-                messages.error(
-                    request,
-                    f"Push failed: {job.error_log or 'Kea returned an error'}"
-                )
+                messages.error(request, f"Push failed: {job.error_log or 'Kea returned an error'}")
 
             job.save()
 
@@ -143,17 +146,75 @@ class KeaSharedNetworkVerifyView(View):
             verification = verifier.verify(obj, target)
 
             if verification["exists"]:
-                messages.success(
-                    request,
-                    f"Shared Network '{obj.name}' exists in Kea on {target.name}."
-                )
+                messages.success(request, f"Shared Network '{obj.name}' exists in Kea on {target.name}.")
             else:
-                messages.warning(
-                    request,
-                    f"Shared Network '{obj.name}' was not found in Kea on {target.name}."
-                )
+                messages.warning(request, f"Shared Network '{obj.name}' was not found in Kea on {target.name}.")
 
         except Exception as exc:
             messages.error(request, f"Verification failed: {exc}")
 
+        return redirect("plugins:netbox_kea_ctrl:keasharednetwork", pk=obj.pk)
+
+
+class KeaSharedNetworkAssignPrefixView(View):
+    template_name = "netbox_kea_ctrl/sharednetwork_assign_prefix.html"
+
+    def get(self, request, pk):
+        obj = get_object_or_404(KeaSharedNetwork, pk=pk)
+        service = PrefixAssignmentService()
+
+        assigned_ids = {
+            prefix.id for prefix in service.get_prefixes_for_shared_network(obj)
+        }
+
+        candidates = [
+            prefix for prefix in service.get_candidate_prefixes()
+            if prefix.id not in assigned_ids
+        ]
+
+        choices = [
+            (prefix.id, str(prefix.prefix))
+            for prefix in candidates
+        ]
+
+        form = PrefixAssignForm(prefix_choices=choices)
+
+        return render(request, self.template_name, {
+            "object": obj,
+            "form": form,
+            "candidate_count": len(choices),
+        })
+
+    def post(self, request, pk):
+        obj = get_object_or_404(KeaSharedNetwork, pk=pk)
+        service = PrefixAssignmentService()
+
+        choices = [
+            (prefix.id, str(prefix.prefix))
+            for prefix in service.get_candidate_prefixes()
+        ]
+        form = PrefixAssignForm(request.POST, prefix_choices=choices)
+
+        if form.is_valid():
+            prefix = get_object_or_404(Prefix, pk=form.cleaned_data["prefix_id"])
+            service.assign_prefix_to_shared_network(prefix, obj)
+            messages.success(request, f"Prefix {prefix.prefix} assigned to Shared Network '{obj.name}'.")
+            return redirect("plugins:netbox_kea_ctrl:keasharednetwork", pk=obj.pk)
+
+        return render(request, self.template_name, {
+            "object": obj,
+            "form": form,
+            "candidate_count": len(choices),
+        })
+
+
+class KeaSharedNetworkRemovePrefixView(View):
+    def post(self, request, pk, prefix_id):
+        obj = get_object_or_404(KeaSharedNetwork, pk=pk)
+        prefix = get_object_or_404(Prefix, pk=prefix_id)
+
+        service = PrefixAssignmentService()
+        service.remove_prefix_from_shared_network(prefix, obj)
+
+        messages.success(request, f"Prefix {prefix.prefix} removed from Shared Network '{obj.name}'.")
         return redirect("plugins:netbox_kea_ctrl:keasharednetwork", pk=obj.pk)
