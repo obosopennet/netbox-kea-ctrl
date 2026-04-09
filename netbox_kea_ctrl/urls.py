@@ -45,6 +45,13 @@ from .views.servers import (
     KeaServerTestConnectionView,
 )
 
+from .views.pools import (
+    KeaPrefixPoolCreateView,
+    KeaPrefixPoolEditView,
+    KeaPrefixPoolRemoveView,
+)
+
+
 app_name = "netbox_kea_ctrl"
 
 urlpatterns = [
@@ -72,6 +79,22 @@ path(
     "shared-networks/<int:pk>/verify-prefixes/",
     KeaSharedNetworkVerifyPrefixesView.as_view(),
     name="keasharednetwork_verify_prefixes",
+),
+
+path(
+    "shared-networks/<int:pk>/prefixes/<int:prefix_id>/pools/add/",
+    KeaPrefixPoolCreateView.as_view(),
+    name="keaprefixpool_add",
+),
+path(
+    "shared-networks/<int:pk>/pools/<int:pool_id>/edit/",
+    KeaPrefixPoolEditView.as_view(),
+    name="keaprefixpool_edit",
+),
+path(
+    "shared-networks/<int:pk>/pools/<int:pool_id>/remove/",
+    KeaPrefixPoolRemoveView.as_view(),
+    name="keaprefixpool_remove",
 ),
     
     path("server-tags/", KeaServerTagListView.as_view(), name="keaservertag_list"),
