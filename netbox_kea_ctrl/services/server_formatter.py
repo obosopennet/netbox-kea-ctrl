@@ -19,29 +19,17 @@ class KeaServerFormatter:
         return summary
 
     def build_ha_summary(self, server):
-        summary = {}
-
-        ha = server.discovered_ha_info or {}
-        entries = ha.get("high-availability") or []
-        if entries:
-            ha0 = entries[0]
-            servers = ha0.get("ha-servers", {})
-            local = servers.get("local", {})
-            remote = servers.get("remote", {})
-
-            summary = {
-                "ha_mode": ha0.get("ha-mode"),
-                "this_server_name": ha0.get("this-server-name"),
-                "scopes": local.get("scopes", []),
-                "local_role": local.get("role"),
-                "local_state": local.get("state"),
-                "peer_role": remote.get("role"),
-                "peer_state": remote.get("state"),
-                "peer_name": remote.get("server-name"),
-                "communication_state": ha0.get("communication-state"),
-            }
-
-        return summary
+        return {
+            "ha_mode": server.discovered_ha_mode,
+            "this_server_name": server.discovered_this_server_name,
+            "local_role": server.discovered_local_role,
+            "local_state": server.discovered_local_state,
+            "peer_name": server.discovered_peer_name,
+            "peer_role": server.discovered_peer_role,
+            "peer_state": server.discovered_peer_state,
+            "communication_state": server.discovered_communication_state,
+            "scopes": server.discovered_scopes or [],
+        }
 
     def build_config_summary(self, server):
         summary = {
