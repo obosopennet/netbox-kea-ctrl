@@ -2,23 +2,58 @@
 
 {% block content %}
 <div class="container">
-  <h1>Server Tags</h1>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center gap-2">
+      <a class="btn btn-sm btn-outline-secondary"
+         href="{% url 'plugins:netbox_kea_ctrl:dashboard' %}">
+        <i class="mdi mdi-arrow-left"></i> Kea Control
+      </a>
+      <h1 class="mb-0">Server Tags</h1>
+    </div>
 
-  <p>
-    <a href="{% url 'plugins:netbox_kea_ctrl:keaservertag_add' %}">Add Server Tag</a>
-  </p>
+    <div>
+      <a class="btn btn-primary" href="{% url 'plugins:netbox_kea_ctrl:keaservertag_add' %}">
+        Add Server Tag
+      </a>
+    </div>
+  </div>
 
-  <ul>
-    {% for obj in object_list %}
-      <li>
-        <a href="{% url 'plugins:netbox_kea_ctrl:keaservertag' pk=obj.pk %}">
-          {{ obj.name }}
-        </a>
-        - {{ obj.family }} - HA={{ obj.ha_group|default:"-" }} - enabled={{ obj.enabled }}
-      </li>
-    {% empty %}
-      <li>No server tags found</li>
-    {% endfor %}
-  </ul>
+  <div class="card">
+    <div class="card-header">
+      <strong>Server Tag Inventory</strong>
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Family</th>
+            <th>Mapped HA Group</th>
+            <th>CB Target</th>
+            <th>Enabled</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for obj in object_list %}
+            <tr>
+              <td>
+                <a href="{% url 'plugins:netbox_kea_ctrl:keaservertag' pk=obj.pk %}">
+                  {{ obj.name }}
+                </a>
+              </td>
+              <td>{{ obj.family }}</td>
+              <td>{{ obj.ha_group|default:"-" }}</td>
+              <td>{{ obj.configuration_backend_target|default:"-" }}</td>
+              <td>{{ obj.enabled }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5">No server tags found</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 {% endblock %}
