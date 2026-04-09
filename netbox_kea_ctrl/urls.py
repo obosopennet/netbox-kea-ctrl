@@ -15,6 +15,7 @@ from .views.server_tags import (
 from .views.ha import (
     KeaHAGroupListView,
     KeaHAGroupView,
+    KeaHAGroupCreateView,
     KeaHAGroupEditView,
     HARefreshStatusView,
     HASetMaintenanceView,
