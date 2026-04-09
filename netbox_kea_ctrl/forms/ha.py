@@ -10,9 +10,6 @@ class KeaHAGroupForm(NetBoxModelForm):
             "name",
             "description",
             "mode",
+            "service",
             "enabled",
-            "primary_name",
-            "secondary_name",
-            "primary_control_agent_url",
-            "secondary_control_agent_url",
         )
