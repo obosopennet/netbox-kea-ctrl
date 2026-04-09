@@ -9,7 +9,7 @@ from netbox_kea_ctrl.forms import KeaServerForm
 from netbox_kea_ctrl.models import KeaServer
 from netbox_kea_ctrl.services.server_discovery import KeaDiscoveryService
 from netbox_kea_ctrl.services.server_formatter import KeaServerFormatter
-
+from collections import defaultdict
 
 class KeaServerListView(ListView):
     model = KeaServer
@@ -20,17 +20,40 @@ class KeaServerListView(ListView):
         return (
             KeaServer.objects.all()
             .select_related("ha_group")
-            .order_by("name")
+            .order_by("ha_group__name", "name")
         )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         qs = context["object_list"]
 
+        grouped = defaultdict(list)
+        unassigned = []
+
+        for server in qs:
+            if server.ha_group:
+                grouped[server.ha_group].append(server)
+            else:
+                unassigned.append(server)
+
+        grouped_ha_servers = []
+        for ha_group, servers in grouped.items():
+            grouped_ha_servers.append({
+                "ha_group": ha_group,
+                "servers": servers,
+                "count": len(servers),
+            })
+
+        grouped_ha_servers.sort(key=lambda x: x["ha_group"].name.lower())
+
+        context["grouped_ha_servers"] = grouped_ha_servers
+        context["unassigned_servers"] = unassigned
+
         context["server_count"] = qs.count()
         context["enabled_count"] = qs.filter(enabled=True).count()
         context["error_count"] = qs.exclude(last_error="").count()
         context["discovered_count"] = qs.exclude(last_seen__isnull=True).count()
+
         return context
 
 
