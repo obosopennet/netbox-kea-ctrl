@@ -1,6 +1,6 @@
 from django.utils import timezone
 
-from netbox_kea_ctrl.services.kea_client import KeaClient, KeaAPIError
+from netbox_kea_ctrl.services.kea_client import KeaClient
 
 
 class KeaDiscoveryService:
@@ -40,16 +40,18 @@ class KeaDiscoveryService:
         except Exception as exc:
             result["errors"].append(f"config-get failed: {exc}")
 
-        # Best-effort HA extraction
         ha_info = {}
         if isinstance(result["status"], list) and result["status"]:
             entry = result["status"][0]
             args = entry.get("arguments", {})
-            # Keep entire status snapshot; HA presence varies by version/config
-            ha_info = {k: v for k, v in args.items() if "ha" in k.lower() or "high" in k.lower()}
+            ha_info = args.get("high-availability", {})
+            if isinstance(ha_info, list) and ha_info:
+                ha_info = ha_info[0]
+            elif not isinstance(ha_info, dict):
+                ha_info = {}
+
         result["ha_info"] = ha_info
 
-        # Persist
         server.last_seen = timezone.now()
         server.last_status = result["status"] or {}
         server.discovered_ha_info = result["ha_info"] or {}
@@ -61,6 +63,35 @@ class KeaDiscoveryService:
             tag = args.get("server-tag") or args.get("server_tag") or ""
             server.discovered_server_tag = tag
 
+        self._populate_normalized_ha_fields(server, result["ha_info"])
         server.save()
 
         return result
+
+    def _populate_normalized_ha_fields(self, server, ha_info):
+        server.discovered_ha_mode = ""
+        server.discovered_this_server_name = ""
+        server.discovered_local_role = ""
+        server.discovered_local_state = ""
+        server.discovered_peer_name = ""
+        server.discovered_peer_role = ""
+        server.discovered_peer_state = ""
+        server.discovered_communication_state = ""
+        server.discovered_scopes = []
+
+        if not isinstance(ha_info, dict):
+            return
+
+        servers = ha_info.get("ha-servers", {})
+        local = servers.get("local", {}) or {}
+        remote = servers.get("remote", {}) or {}
+
+        server.discovered_ha_mode = ha_info.get("ha-mode", "") or ""
+        server.discovered_this_server_name = ha_info.get("this-server-name", "") or ""
+        server.discovered_local_role = local.get("role", "") or ""
+        server.discovered_local_state = local.get("state", "") or ""
+        server.discovered_peer_name = remote.get("server-name", "") or ""
+        server.discovered_peer_role = remote.get("role", "") or ""
+        server.discovered_peer_state = remote.get("state", "") or ""
+        server.discovered_communication_state = ha_info.get("communication-state", "") or ""
+        server.discovered_scopes = local.get("scopes", []) or []
