@@ -46,9 +46,96 @@
     </div>
   </div>
 
-  <div class="card">
+  {% for group in grouped_ha_servers %}
+    <div class="card mb-4">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <strong>
+              <a href="{% url 'plugins:netbox_kea_ctrl:keahagroup' pk=group.ha_group.pk %}">
+                {{ group.ha_group.name }}
+              </a>
+            </strong>
+          </div>
+          <div class="text-muted">
+            mode={{ group.ha_group.mode }} |
+            service={{ group.ha_group.service }} |
+            members={{ group.count }}
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="mb-3">
+          <strong>Detected primary:</strong>
+          {{ group.ha_group.detected_primary_server|default:"-" }}
+          &nbsp;&nbsp;
+          <strong>Detected secondary:</strong>
+          {{ group.ha_group.detected_secondary_server|default:"-" }}
+        </div>
+      </div>
+
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>API URL</th>
+              <th>Service</th>
+              <th>Role</th>
+              <th>Discovered Tag</th>
+              <th>Detected Local Role</th>
+              <th>Detected Local State</th>
+              <th>Last Seen</th>
+              <th>Status</th>
+              <th>Error</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for obj in group.servers %}
+              <tr>
+                <td>
+                  <a href="{% url 'plugins:netbox_kea_ctrl:keaserver' pk=obj.pk %}">
+                    {{ obj.name }}
+                  </a>
+                </td>
+                <td>{{ obj.api_url }}</td>
+                <td>{{ obj.service }}</td>
+                <td>{{ obj.role }}</td>
+                <td>{{ obj.discovered_server_tag|default:"-" }}</td>
+                <td>{{ obj.discovered_local_role|default:"-" }}</td>
+                <td>{{ obj.discovered_local_state|default:"-" }}</td>
+                <td>{{ obj.last_seen|default:"-" }}</td>
+                <td>
+                  {% if obj.last_error %}
+                    <span class="badge bg-danger">Error</span>
+                  {% elif obj.last_seen %}
+                    <span class="badge bg-success">OK</span>
+                  {% else %}
+                    <span class="badge bg-secondary">Unknown</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if obj.last_error %}
+                    <span title="{{ obj.last_error }}">
+                      {{ obj.last_error|truncatechars:60 }}
+                    </span>
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% empty %}
+  {% endfor %}
+
+  <div class="card mb-4">
     <div class="card-header">
-      <strong>Server Inventory</strong>
+      <strong>Unassigned Servers</strong>
     </div>
     <div class="card-body p-0">
       <table class="table table-hover mb-0">
@@ -58,7 +145,6 @@
             <th>API URL</th>
             <th>Service</th>
             <th>Role</th>
-            <th>Mapped HA Group</th>
             <th>Discovered Tag</th>
             <th>Detected Local Role</th>
             <th>Detected Local State</th>
@@ -68,7 +154,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for obj in object_list %}
+          {% for obj in unassigned_servers %}
             <tr>
               <td>
                 <a href="{% url 'plugins:netbox_kea_ctrl:keaserver' pk=obj.pk %}">
@@ -78,7 +164,6 @@
               <td>{{ obj.api_url }}</td>
               <td>{{ obj.service }}</td>
               <td>{{ obj.role }}</td>
-              <td>{{ obj.ha_group|default:"-" }}</td>
               <td>{{ obj.discovered_server_tag|default:"-" }}</td>
               <td>{{ obj.discovered_local_role|default:"-" }}</td>
               <td>{{ obj.discovered_local_state|default:"-" }}</td>
@@ -104,7 +189,7 @@
             </tr>
           {% empty %}
             <tr>
-              <td colspan="11">No Kea servers found</td>
+              <td colspan="10">No unassigned servers</td>
             </tr>
           {% endfor %}
         </tbody>
