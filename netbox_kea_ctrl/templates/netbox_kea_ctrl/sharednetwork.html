@@ -34,7 +34,27 @@
           Push to Kea
         </button>
       </form>
+  <div class="d-flex gap-2">
+  <form method="post" action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_verify' pk=object.pk %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-success">
+      Verify in Kea
+    </button>
+  </form>
 
+  <form method="post" action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_push' pk=object.pk %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success">
+      Push to Kea
+    </button>
+  </form>
+
+  <a class="btn btn-primary"
+     href="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_edit' pk=object.pk %}">
+    Edit
+  </a>
+</div>
+      
       <a class="btn btn-primary"
          href="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_edit' pk=object.pk %}">
         Edit
