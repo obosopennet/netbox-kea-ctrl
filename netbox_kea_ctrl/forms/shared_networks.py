@@ -3,7 +3,26 @@ from netbox.forms import NetBoxModelForm
 from netbox_kea_ctrl.models import KeaSharedNetwork
 
 
-class KeaSharedNetworkForm(NetBoxModelForm):
+class KeaSharedNetworkCreateForm(NetBoxModelForm):
+    class Meta:
+        model = KeaSharedNetwork
+        fields = (
+            "name",
+            "description",
+            "family",
+            "server_tag",
+            "publish_strategy",
+            "ha_group",
+            "enabled",
+            "option_data",
+        )
+        labels = {
+            "server_tag": "Kea Server Tag",
+            "ha_group": "Mapped HA Group",
+        }
+
+
+class KeaSharedNetworkEditForm(NetBoxModelForm):
     class Meta:
         model = KeaSharedNetwork
         fields = (
@@ -35,7 +54,7 @@ class KeaSharedNetworkForm(NetBoxModelForm):
             self.add_error("ha_group", "HA Group must be selected when publish strategy is 'HA Group'.")
 
         if publish_strategy == KeaSharedNetwork.PUBLISH_STRATEGY_MANUAL:
-            if manual_servers is None or getattr(manual_servers, "count", lambda: 0)() == 0:
+            if not manual_servers or manual_servers.count() == 0:
                 self.add_error("manual_servers", "At least one Kea Server must be selected when publish strategy is 'Manual Server Selection'.")
 
         if ha_group and server_tag and getattr(server_tag, "ha_group", None):
