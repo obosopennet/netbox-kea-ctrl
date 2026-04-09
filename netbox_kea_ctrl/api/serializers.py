@@ -1,3 +1,4 @@
+from ipam.api.serializers import PrefixSerializer
 from netbox.api.serializers import NetBoxModelSerializer
 
 from netbox_kea_ctrl.models import (
@@ -53,9 +54,25 @@ class KeaSharedNetworkSerializer(NetBoxModelSerializer):
 
 
 class KeaPrefixPoolSerializer(NetBoxModelSerializer):
+    prefix = PrefixSerializer(nested=True)
+
     class Meta:
         model = KeaPrefixPool
-        fields = "__all__"
+        fields = (
+            "id",
+            "url",
+            "display_url",
+            "display",
+            "prefix",
+            "start_address",
+            "end_address",
+            "description",
+            "enabled",
+            "created",
+            "last_updated",
+            "custom_fields",
+            "tags",
+        )
 
 
 class KeaPublishJobSerializer(NetBoxModelSerializer):
