@@ -55,7 +55,7 @@ urlpatterns = [
     path("server-tags/<int:pk>/edit/", KeaServerTagEditView.as_view(), name="keaservertag_edit"),
 
     path("ha-groups/", KeaHAGroupListView.as_view(), name="keahagroup_list"),
-    path("ha-groups/add/", KeaHAGroupEditView.as_view(), name="keahagroup_add"),
+    path("ha-groups/add/", KeaHAGroupCreateView.as_view(), name="keahagroup_add"),
     path("ha-groups/<int:pk>/", KeaHAGroupView.as_view(), name="keahagroup"),
     path("ha-groups/<int:pk>/edit/", KeaHAGroupEditView.as_view(), name="keahagroup_edit"),
     path("ha-groups/<int:pk>/refresh/", HARefreshStatusView.as_view(), name="keahagroup_refresh"),
