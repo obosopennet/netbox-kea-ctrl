@@ -14,6 +14,7 @@ from .views.server_tags import (
     KeaServerTagView,
     KeaServerTagCreateView,
     KeaServerTagEditView,
+    KeaServerTagPushView,
 )
 from .views.ha import (
     KeaHAGroupListView,
@@ -52,11 +53,13 @@ urlpatterns = [
     path("shared-networks/<int:pk>/", KeaSharedNetworkView.as_view(), name="keasharednetwork"),
     path("shared-networks/<int:pk>/edit/", KeaSharedNetworkEditView.as_view(), name="keasharednetwork_edit"),
     path("shared-networks/<int:pk>/push/", KeaSharedNetworkPushView.as_view(), name="keasharednetwork_push"),
-
+    path("shared-networks/<int:pk>/verify/", KeaSharedNetworkVerifyView.as_view(), name="keasharednetwork_verify"),
+    
     path("server-tags/", KeaServerTagListView.as_view(), name="keaservertag_list"),
     path("server-tags/add/", KeaServerTagCreateView.as_view(), name="keaservertag_add"),
     path("server-tags/<int:pk>/", KeaServerTagView.as_view(), name="keaservertag"),
     path("server-tags/<int:pk>/edit/", KeaServerTagEditView.as_view(), name="keaservertag_edit"),
+    path("server-tags/<int:pk>/push/", KeaServerTagPushView.as_view(), name="keaservertag_push"),
 
     path("ha-groups/", KeaHAGroupListView.as_view(), name="keahagroup_list"),
     path("ha-groups/add/", KeaHAGroupCreateView.as_view(), name="keahagroup_add"),
