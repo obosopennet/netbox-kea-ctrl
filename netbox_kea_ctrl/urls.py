@@ -12,6 +12,8 @@ from .views.shared_networks import (
     KeaSharedNetworkAssignPrefixView,
     KeaSharedNetworkRemovePrefixView,
     KeaSharedNetworkPushPrefixView,
+    KeaSharedNetworkPushAllPrefixesView,
+    KeaSharedNetworkVerifyPrefixesView,
 )
 from .views.server_tags import (
     KeaServerTagListView,
