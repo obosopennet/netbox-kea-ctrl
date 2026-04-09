@@ -52,7 +52,7 @@ urlpatterns = [
     path("shared-networks/<int:pk>/edit/", KeaSharedNetworkEditView.as_view(), name="keasharednetwork_edit"),
 
     path("server-tags/", KeaServerTagListView.as_view(), name="keaservertag_list"),
-    path("server-tags/add/", KeaServerTagEditView.as_view(), name="keaservertag_add"),
+    path("server-tags/add/", KeaServerTagCreateView.as_view(), name="keaservertag_add"),
     path("server-tags/<int:pk>/", KeaServerTagView.as_view(), name="keaservertag"),
     path("server-tags/<int:pk>/edit/", KeaServerTagEditView.as_view(), name="keaservertag_edit"),
 
