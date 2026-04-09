@@ -3,6 +3,7 @@ from django.db import models
 from netbox.models import NetBoxModel
 
 from ipam.models import Prefix
+from netaddr import IPAddress
 
 
 class KeaPrefixPool(NetBoxModel):
@@ -27,25 +28,36 @@ class KeaPrefixPool(NetBoxModel):
     def clean(self):
         super().clean()
 
+        errors = {}
+
         if self.start_address and self.end_address:
-            if self.start_address > self.end_address:
-                raise ValidationError({"end_address": "End address must be greater than or equal to start address."})
+            if IPAddress(self.start_address) > IPAddress(self.end_address):
+                errors["end_address"] = "End address must be greater than or equal to start address."
 
         if self.prefix:
             network = self.prefix.prefix.network
-            broadcast = self.prefix.prefix.broadcast_address
+            broadcast = self.prefix.prefix.broadcast
 
-            if self.start_address and self.start_address not in self.prefix.prefix:
-                raise ValidationError({"start_address": "Start address must be داخل prefix range."})
+            if self.start_address:
+                start_ip = IPAddress(self.start_address)
+                if start_ip not in self.prefix.prefix:
+                    errors["start_address"] = "Start address must be inside prefix range."
+                elif start_ip == network:
+                    errors["start_address"] = "Start address cannot be the network address."
+                elif start_ip == broadcast:
+                    errors["start_address"] = "Start address cannot be the broadcast address."
 
-            if self.end_address and self.end_address not in self.prefix.prefix:
-                raise ValidationError({"end_address": "End address must be inside prefix range."})
+            if self.end_address:
+                end_ip = IPAddress(self.end_address)
+                if end_ip not in self.prefix.prefix:
+                    errors["end_address"] = "End address must be inside prefix range."
+                elif end_ip == network:
+                    errors["end_address"] = "End address cannot be the network address."
+                elif end_ip == broadcast:
+                    errors["end_address"] = "End address cannot be the broadcast address."
 
-            if str(self.start_address) == str(network):
-                raise ValidationError({"start_address": "Start address cannot be the network address."})
-
-            if str(self.end_address) == str(broadcast):
-                raise ValidationError({"end_address": "End address cannot be the broadcast address."})
+        if errors:
+            raise ValidationError(errors)
 
     @property
     def pool_string(self):
