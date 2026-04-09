@@ -4,6 +4,7 @@ from .shared_networks import KeaSharedNetworkCreateForm, KeaSharedNetworkEditFor
 from .actions import MaintenanceActionForm
 from .servers import KeaServerForm
 from .prefix_assignment import PrefixAssignForm
+from .pools import KeaPrefixPoolForm
 
 __all__ = (
     "KeaHAGroupForm",
@@ -13,4 +14,5 @@ __all__ = (
     "MaintenanceActionForm",
     "KeaServerForm",
     "PrefixAssignForm",
+    "KeaPrefixPoolForm",
 )
