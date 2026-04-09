@@ -58,14 +58,8 @@ class KeaSharedNetwork(NetBoxModel):
 
         errors = {}
 
-        if self.publish_strategy == self.PUBLISH_STRATEGY_HA_GROUP:
-            if not self.ha_group:
-                errors["ha_group"] = "HA Group must be set when publish strategy is 'HA Group'."
-
-        if self.publish_strategy == self.PUBLISH_STRATEGY_MANUAL:
-            # ManyToMany can't reliably be validated on unsaved instance here,
-            # so form validation should also handle this.
-            pass
+        if self.publish_strategy == self.PUBLISH_STRATEGY_HA_GROUP and not self.ha_group:
+            errors["ha_group"] = "HA Group must be set when publish strategy is 'HA Group'."
 
         if self.ha_group and self.server_tag and self.server_tag.ha_group:
             if self.server_tag.ha_group_id != self.ha_group_id:
@@ -76,13 +70,19 @@ class KeaSharedNetwork(NetBoxModel):
             raise ValidationError(errors)
 
     def get_publish_targets(self):
-        if self.publish_strategy == self.PUBLISH_STRATEGY_HA_GROUP and self.ha_group:
-            return self.ha_group.servers.filter(enabled=True).order_by("name")
+        from netbox_kea_ctrl.models import KeaServer
+
+        if self.publish_strategy == self.PUBLISH_STRATEGY_HA_GROUP:
+            if self.ha_group_id:
+                return self.ha_group.servers.filter(enabled=True).order_by("name")
+            return KeaServer.objects.none()
 
         if self.publish_strategy == self.PUBLISH_STRATEGY_MANUAL:
-            return self.manual_servers.filter(enabled=True).order_by("name")
+            if self.pk:
+                return self.manual_servers.filter(enabled=True).order_by("name")
+            return KeaServer.objects.none()
 
-        return self.manual_servers.none()
+        return KeaServer.objects.none()
 
     @property
     def publish_targets_display(self):
