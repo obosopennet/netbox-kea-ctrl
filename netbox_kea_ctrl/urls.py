@@ -51,6 +51,7 @@ urlpatterns = [
     path("shared-networks/add/", KeaSharedNetworkCreateView.as_view(), name="keasharednetwork_add"),
     path("shared-networks/<int:pk>/", KeaSharedNetworkView.as_view(), name="keasharednetwork"),
     path("shared-networks/<int:pk>/edit/", KeaSharedNetworkEditView.as_view(), name="keasharednetwork_edit"),
+    path("shared-networks/<int:pk>/push/", KeaSharedNetworkPushView.as_view(), name="keasharednetwork_push"),
 
     path("server-tags/", KeaServerTagListView.as_view(), name="keaservertag_list"),
     path("server-tags/add/", KeaServerTagCreateView.as_view(), name="keaservertag_add"),
