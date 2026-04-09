@@ -26,12 +26,10 @@ class KeaHAGroup(NetBoxModel):
     def detected_primary_server(self):
         servers = list(self.servers.all())
 
-        # Prefer discovered role from Kea
         for server in servers:
             if (server.discovered_local_role or "").lower() == "primary":
                 return server
 
-        # Fallback to manually assigned role
         for server in servers:
             if (server.role or "").lower() == "primary":
                 return server
@@ -41,15 +39,12 @@ class KeaHAGroup(NetBoxModel):
     @property
     def detected_secondary_server(self):
         servers = list(self.servers.all())
-
         secondary_candidates = {"secondary", "standby"}
 
-        # Prefer discovered role from Kea
         for server in servers:
             if (server.discovered_local_role or "").lower() in secondary_candidates:
                 return server
 
-        # Fallback to manually assigned role
         for server in servers:
             if (server.role or "").lower() == "secondary":
                 return server
