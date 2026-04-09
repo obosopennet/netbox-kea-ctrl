@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
@@ -19,7 +19,14 @@ class KeaHAGroupView(DetailView):
     template_name = "netbox_kea_ctrl/hagroup.html"
 
 
-class KeaHAGroupEditView(CreateView, UpdateView):
+class KeaHAGroupCreateView(CreateView):
+    model = KeaHAGroup
+    form_class = KeaHAGroupForm
+    template_name = "netbox_kea_ctrl/object_edit.html"
+    success_url = reverse_lazy("plugins:netbox_kea_ctrl:keahagroup_list")
+
+
+class KeaHAGroupEditView(UpdateView):
     model = KeaHAGroup
     form_class = KeaHAGroupForm
     template_name = "netbox_kea_ctrl/object_edit.html"
