@@ -10,20 +10,15 @@ class SubnetRemover:
         if shared_network.family != "ipv4":
             raise SubnetRemoveError("Only IPv4 prefixes are supported in the first version.")
 
-        if not shared_network.server_tag:
-            raise SubnetRemoveError("Shared Network is missing server_tag.")
-
         payload = {
-            "command": "remote-subnet4-del",
+            "command": "remote-subnet4-del-by-prefix",
             "service": ["dhcp4"],
             "arguments": {
                 "subnets": [
                     {
                         "subnet": str(prefix.prefix),
-                        "shared-network-name": shared_network.name,
                     }
-                ],
-                "server-tags": [shared_network.server_tag.name],
+                ]
             },
         }
         return payload
