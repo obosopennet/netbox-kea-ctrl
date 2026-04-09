@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
+
 from netbox_kea_ctrl.forms import (
     KeaSharedNetworkCreateForm,
     KeaSharedNetworkEditForm,
@@ -218,3 +219,70 @@ class KeaSharedNetworkRemovePrefixView(View):
 
         messages.success(request, f"Prefix {prefix.prefix} removed from Shared Network '{obj.name}'.")
         return redirect("plugins:netbox_kea_ctrl:keasharednetwork", pk=obj.pk)
+
+
+class KeaSharedNetworkPushPrefixView(View):
+    def post(self, request, pk, prefix_id):
+        obj = get_object_or_404(KeaSharedNetwork, pk=pk)
+        prefix = get_object_or_404(Prefix, pk=prefix_id)
+
+        targets = list(obj.get_publish_targets())
+        if not targets:
+            messages.error(request, "No publish targets resolved for this Shared Network.")
+            return redirect("plugins:netbox_kea_ctrl:keasharednetwork", pk=obj.pk)
+
+        target = targets[0]
+
+        job = KeaPublishJob.objects.create(
+            created_by=request.user,
+            server_tag_name=obj.server_tag.name if obj.server_tag else "",
+            status="running",
+            summary=f"Push Prefix '{prefix.prefix}' to Shared Network '{obj.name}'",
+            validation_output={
+                "shared_network": obj.name,
+                "prefix": str(prefix.prefix),
+                "selected_target": target.name,
+                "resolved_targets": [server.name for server in targets],
+            },
+        )
+
+        try:
+            from netbox_kea_ctrl.services.subnet_publisher import SubnetPublisher, SubnetPublishError
+
+            publisher = SubnetPublisher()
+            outcome = publisher.push(obj, prefix, target)
+
+            job.generated_payload = outcome["payload"]
+            job.publish_output = outcome["result"]
+
+            kea_ok = False
+            kea_errors = []
+
+            result = outcome["result"]
+            if isinstance(result, list) and result:
+                kea_ok = all(item.get("result") == 0 for item in result)
+                kea_errors = [item.get("text", "") for item in result if item.get("result") != 0]
+            elif isinstance(result, dict):
+                kea_ok = result.get("result") == 0
+                if not kea_ok:
+                    kea_errors = [result.get("text", "Unknown Kea error")]
+            else:
+                kea_errors = ["Unexpected Kea response format"]
+
+            if kea_ok:
+                job.status = "success"
+                messages.success(request, f"Prefix {prefix.prefix} pushed successfully to {target.name}.")
+            else:
+                job.status = "failed"
+                job.error_log = "\n".join(filter(None, kea_errors))
+                messages.error(request, f"Prefix push failed: {job.error_log or 'Kea returned an error'}")
+
+            job.save()
+
+        except Exception as exc:
+            job.status = "failed"
+            job.error_log = str(exc)
+            job.save()
+            messages.error(request, f"Prefix push failed: {exc}")
+
+        return redirect("plugins:netbox_kea_ctrl:keapublishjob", pk=job.pk)
