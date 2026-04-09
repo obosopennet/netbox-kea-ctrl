@@ -14,3 +14,6 @@ class KeaServerTagForm(NetBoxModelForm):
             "ha_group",
             "configuration_backend_target",
         )
+        labels = {
+            "ha_group": "Mapped HA Group",
+        }
