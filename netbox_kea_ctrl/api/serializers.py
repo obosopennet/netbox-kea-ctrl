@@ -1,5 +1,6 @@
 from ipam.api.serializers import PrefixSerializer
 from netbox.api.serializers import NetBoxModelSerializer
+from rest_framework import serializers
 
 from netbox_kea_ctrl.models import (
     KeaHAGroup,
@@ -54,24 +55,23 @@ class KeaSharedNetworkSerializer(NetBoxModelSerializer):
 
 
 class KeaPrefixPoolSerializer(NetBoxModelSerializer):
-    prefix = PrefixSerializer(nested=True)
+    prefix_id = serializers.IntegerField(source="prefix.id", read_only=True)
+    prefix_display = serializers.CharField(source="prefix.prefix", read_only=True)
 
     class Meta:
         model = KeaPrefixPool
         fields = (
             "id",
             "url",
-            "display_url",
             "display",
-            "prefix",
+            "prefix_id",
+            "prefix_display",
             "start_address",
             "end_address",
             "description",
             "enabled",
             "created",
             "last_updated",
-            "custom_fields",
-            "tags",
         )
 
 
