@@ -45,7 +45,18 @@ class KeaSharedNetworkView(DetailView):
         service = PrefixAssignmentService()
 
         context["publish_targets"] = self.object.get_publish_targets()
-        context["assigned_prefixes"] = service.get_prefixes_for_shared_network(self.object)
+        assigned_prefixes = service.get_prefixes_for_shared_network(self.object)
+context["assigned_prefixes"] = assigned_prefixes
+
+from netbox_kea_ctrl.models import KeaPrefixPool
+
+prefix_pools = {}
+for prefix in assigned_prefixes:
+    prefix_pools[prefix.id] = list(
+        KeaPrefixPool.objects.filter(prefix=prefix, enabled=True).order_by("start_address")
+    )
+
+context["prefix_pools"] = prefix_pools
         context["prefix_verification"] = self.request.session.get(
             f"kea_verify_prefixes_{self.object.pk}"
         )
