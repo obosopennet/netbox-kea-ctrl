@@ -1,22 +1,137 @@
 {% extends 'base/layout.html' %}
 
 {% block content %}
+<style>
+  .kea-wrap {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .kea-pre-wrap {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    margin: 0;
+    font-size: 0.9rem;
+  }
+</style>
+
 <div class="container">
-  <h1>{{ object.name }}</h1>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center gap-2">
+      <a class="btn btn-sm btn-outline-secondary"
+         href="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_list' %}">
+        <i class="mdi mdi-arrow-left"></i> Shared Networks
+      </a>
+      <h1 class="mb-0">{{ object.name }}</h1>
+    </div>
 
-  <p>
-    <a href="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_edit' pk=object.pk %}">Edit</a>
-  </p>
+    <div>
+      <a class="btn btn-primary"
+         href="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_edit' pk=object.pk %}">
+        Edit
+      </a>
+    </div>
+  </div>
 
-  <ul>
-    <li><strong>Name:</strong> {{ object.name }}</li>
-    <li><strong>Description:</strong> {{ object.description|default:"-" }}</li>
-    <li><strong>Family:</strong> {{ object.family }}</li>
-    <li><strong>Server tag:</strong> {{ object.server_tag }}</li>
-    <li><strong>Enabled:</strong> {{ object.enabled }}</li>
-    <li><strong>Option data:</strong></li>
-  </ul>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-header">
+          <strong>Shared Network Details</strong>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <tbody>
+              <tr>
+                <th style="width: 35%;">Name</th>
+                <td>{{ object.name }}</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td>{{ object.description|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Family</th>
+                <td>{{ object.family }}</td>
+              </tr>
+              <tr>
+                <th>Server Tag</th>
+                <td>{{ object.server_tag }}</td>
+              </tr>
+              <tr>
+                <th>Publish Strategy</th>
+                <td>{{ object.publish_strategy }}</td>
+              </tr>
+              <tr>
+                <th>HA Group</th>
+                <td>{{ object.ha_group|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Enabled</th>
+                <td>{{ object.enabled }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-  <pre>{{ object.option_data|default:"" }}</pre>
+      <div class="card mb-3">
+        <div class="card-header">
+          <strong>Publish Targets</strong>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>API URL</th>
+                <th>Service</th>
+                <th>HA Group</th>
+                <th>Detected Tag</th>
+                <th>Last Seen</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for server in publish_targets %}
+                <tr>
+                  <td>
+                    <a href="{% url 'plugins:netbox_kea_ctrl:keaserver' pk=server.pk %}">
+                      {{ server.name }}
+                    </a>
+                  </td>
+                  <td class="kea-wrap">{{ server.api_url }}</td>
+                  <td>{{ server.service }}</td>
+                  <td>{{ server.ha_group|default:"-" }}</td>
+                  <td>{{ server.discovered_server_tag|default:"-" }}</td>
+                  <td>{{ server.last_seen|default:"-" }}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="6">No publish targets resolved</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-header">
+          <strong>Option Data</strong>
+        </div>
+        <div class="card-body">
+          {% if object.option_data %}
+            <pre class="kea-pre-wrap">{{ object.option_data }}</pre>
+          {% else %}
+            <span class="text-muted">No option data configured</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
