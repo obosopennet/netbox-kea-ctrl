@@ -61,7 +61,7 @@ class KeaSharedNetwork(NetBoxModel):
         if self.publish_strategy == self.PUBLISH_STRATEGY_HA_GROUP and not self.ha_group:
             errors["ha_group"] = "HA Group must be set when publish strategy is 'HA Group'."
 
-        if self.ha_group and self.server_tag and self.server_tag.ha_group:
+        if self.ha_group and self.server_tag and getattr(self.server_tag, "ha_group", None):
             if self.server_tag.ha_group_id != self.ha_group_id:
                 errors["server_tag"] = "Selected server tag belongs to a different HA Group."
                 errors["ha_group"] = "Selected HA Group does not match the selected server tag."
