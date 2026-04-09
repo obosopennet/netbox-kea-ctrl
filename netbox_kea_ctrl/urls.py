@@ -46,7 +46,7 @@ urlpatterns = [
     path("validation/publish/<str:server_tag>/", PublishServerTagView.as_view(), name="publish_server_tag"),
 
     path("shared-networks/", KeaSharedNetworkListView.as_view(), name="keasharednetwork_list"),
-    path("shared-networks/add/", KeaSharedNetworkEditView.as_view(), name="keasharednetwork_add"),
+    path("shared-networks/add/", KeaSharedNetworkCreateView.as_view(), name="keasharednetwork_add"),
     path("shared-networks/<int:pk>/", KeaSharedNetworkView.as_view(), name="keasharednetwork"),
     path("shared-networks/<int:pk>/edit/", KeaSharedNetworkEditView.as_view(), name="keasharednetwork_edit"),
 
