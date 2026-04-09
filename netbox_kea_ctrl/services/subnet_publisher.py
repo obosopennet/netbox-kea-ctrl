@@ -31,7 +31,7 @@ class SubnetPublisher:
             "command": "remote-subnet4-set",
             "service": ["dhcp4"],
             "arguments": {
-                "subnet4": [subnet],
+                "subnets": [subnet],
                 "server-tags": [shared_network.server_tag.name],
             },
         }
@@ -55,7 +55,6 @@ class SubnetPublisher:
         }
 
     def _build_subnet_id(self, prefix):
-        # Enkel og stabil første versjon
         return prefix.id
 
     def _parse_option_data(self, raw):
