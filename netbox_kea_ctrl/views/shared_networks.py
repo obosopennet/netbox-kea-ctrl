@@ -1,7 +1,7 @@
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
-from netbox_kea_ctrl.forms import KeaSharedNetworkForm
+from netbox_kea_ctrl.forms import KeaSharedNetworkCreateForm, KeaSharedNetworkEditForm
 from netbox_kea_ctrl.models import KeaSharedNetwork
 
 
@@ -31,13 +31,13 @@ class KeaSharedNetworkView(DetailView):
 
 class KeaSharedNetworkCreateView(CreateView):
     model = KeaSharedNetwork
-    form_class = KeaSharedNetworkForm
+    form_class = KeaSharedNetworkCreateForm
     template_name = "netbox_kea_ctrl/object_edit.html"
     success_url = reverse_lazy("plugins:netbox_kea_ctrl:keasharednetwork_list")
 
 
 class KeaSharedNetworkEditView(UpdateView):
     model = KeaSharedNetwork
-    form_class = KeaSharedNetworkForm
+    form_class = KeaSharedNetworkEditForm
     template_name = "netbox_kea_ctrl/object_edit.html"
     success_url = reverse_lazy("plugins:netbox_kea_ctrl:keasharednetwork_list")
