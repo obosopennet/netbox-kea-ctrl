@@ -28,6 +28,11 @@
     </div>
 
     <div class="d-flex gap-2">
+      <a class="btn btn-outline-primary"
+         href="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_assign_prefix' pk=object.pk %}">
+        Add Prefix
+      </a>
+
       <form method="post" action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_verify' pk=object.pk %}">
         {% csrf_token %}
         <button type="submit" class="btn btn-outline-success">
@@ -149,6 +154,48 @@
           </table>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-header">
+      <strong>Assigned Prefixes</strong>
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Prefix</th>
+            <th>VRF</th>
+            <th>Status</th>
+            <th>Description</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for prefix in assigned_prefixes %}
+            <tr>
+              <td>{{ prefix.prefix }}</td>
+              <td>{{ prefix.vrf|default:"-" }}</td>
+              <td>{{ prefix.status }}</td>
+              <td>{{ prefix.description|default:"-" }}</td>
+              <td>
+                <form method="post"
+                      action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_remove_prefix' pk=object.pk prefix_id=prefix.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-danger">
+                    Remove
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5">No active managed prefixes assigned</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
