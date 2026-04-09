@@ -2,58 +2,205 @@
 
 {% block content %}
 <div class="container">
-  <h1>Kea Control</h1>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Kea Control</h1>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="text-muted">Servers</div>
+          <div class="fs-4 fw-bold">{{ server_count }}</div>
+          <div class="small text-muted">
+            Enabled: {{ enabled_server_count }}<br>
+            Discovered: {{ discovered_server_count }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="text-muted">HA Groups</div>
+          <div class="fs-4 fw-bold">{{ ha_group_count }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="text-muted">Server Tags</div>
+          <div class="fs-4 fw-bold">{{ server_tag_count }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="text-muted">Shared Networks</div>
+          <div class="fs-4 fw-bold">{{ shared_network_count }}</div>
+          <div class="small text-muted">
+            Server errors: {{ server_error_count }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <strong>Quick Links</strong>
+        </div>
+        <div class="card-body">
+          <div class="list-group">
+            <a class="list-group-item list-group-item-action" href="{% url 'plugins:netbox_kea_ctrl:keaserver_list' %}">
+              Kea Servers
+            </a>
+            <a class="list-group-item list-group-item-action" href="{% url 'plugins:netbox_kea_ctrl:keahagroup_list' %}">
+              HA Groups
+            </a>
+            <a class="list-group-item list-group-item-action" href="{% url 'plugins:netbox_kea_ctrl:keaservertag_list' %}">
+              Server Tags
+            </a>
+            <a class="list-group-item list-group-item-action" href="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_list' %}">
+              Shared Networks
+            </a>
+            <a class="list-group-item list-group-item-action" href="{% url 'plugins:netbox_kea_ctrl:prefix_validation' %}">
+              Prefix Validation
+            </a>
+            <a class="list-group-item list-group-item-action" href="{% url 'plugins:netbox_kea_ctrl:keapublishjob_list' %}">
+              Publish Jobs
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <strong>HA Groups Summary</strong>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Mode</th>
+                <th>Service</th>
+                <th>Members</th>
+                <th>Detected Primary</th>
+                <th>Detected Secondary</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for obj in ha_groups %}
+                <tr>
+                  <td>
+                    <a href="{% url 'plugins:netbox_kea_ctrl:keahagroup' pk=obj.pk %}">
+                      {{ obj.name }}
+                    </a>
+                  </td>
+                  <td>{{ obj.mode }}</td>
+                  <td>{{ obj.service }}</td>
+                  <td>{{ obj.servers.count }}</td>
+                  <td>{{ obj.detected_primary_server|default:"-" }}</td>
+                  <td>{{ obj.detected_secondary_server|default:"-" }}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="6">No HA groups defined</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="row">
-
     <div class="col-md-6">
-      <h3>Infrastructure</h3>
-      <ul>
-        <li>
-          <a href="{% url 'plugins:netbox_kea_ctrl:keaserver_list' %}">
-            Kea Servers
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'plugins:netbox_kea_ctrl:keahagroup_list' %}">
-            HA Groups
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'plugins:netbox_kea_ctrl:keaservertag_list' %}">
-            Server Tags
-          </a>
-        </li>
-      </ul>
+      <div class="card mb-3">
+        <div class="card-header">
+          <strong>Servers With Errors</strong>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>HA Group</th>
+                <th>Last Seen</th>
+                <th>Error</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for obj in servers_with_errors %}
+                <tr>
+                  <td>
+                    <a href="{% url 'plugins:netbox_kea_ctrl:keaserver' pk=obj.pk %}">
+                      {{ obj.name }}
+                    </a>
+                  </td>
+                  <td>{{ obj.ha_group|default:"-" }}</td>
+                  <td>{{ obj.last_seen|default:"-" }}</td>
+                  <td>{{ obj.last_error|truncatechars:80 }}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="4">No server errors</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <div class="col-md-6">
-      <h3>Configuration</h3>
-      <ul>
-        <li>
-          <a href="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_list' %}">
-            Shared Networks
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'plugins:netbox_kea_ctrl:prefix_validation' %}">
-            Prefix Validation
-          </a>
-        </li>
-      </ul>
+      <div class="card mb-3">
+        <div class="card-header">
+          <strong>Recent Publish Jobs</strong>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Status</th>
+                <th>Server Tag</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for obj in recent_publish_jobs %}
+                <tr>
+                  <td>
+                    <a href="{% url 'plugins:netbox_kea_ctrl:keapublishjob' pk=obj.pk %}">
+                      {{ obj.pk }}
+                    </a>
+                  </td>
+                  <td>{{ obj.status }}</td>
+                  <td>{{ obj.server_tag_name|default:"-" }}</td>
+                  <td>{{ obj.created }}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="4">No publish jobs yet</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
-
-    <div class="col-md-6">
-      <h3>Operations</h3>
-      <ul>
-        <li>
-          <a href="{% url 'plugins:netbox_kea_ctrl:keapublishjob_list' %}">
-            Publish Jobs
-          </a>
-        </li>
-      </ul>
-    </div>
-
   </div>
 </div>
 {% endblock %}
