@@ -35,36 +35,30 @@ class KeaSharedNetworkListView(ListView):
             .order_by("name")
         )
 
-
 class KeaSharedNetworkView(DetailView):
     model = KeaSharedNetwork
     template_name = "netbox_kea_ctrl/sharednetwork.html"
 
-def get_context_data(self, **kwargs):
-    context = super().get_context_data(**kwargs)
-    service = PrefixAssignmentService()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        service = PrefixAssignmentService()
 
-    assigned_prefixes = service.get_prefixes_for_shared_network(self.object)
-    context["assigned_prefixes"] = assigned_prefixes
+        assigned_prefixes = service.get_prefixes_for_shared_network(self.object)
 
-    from netbox_kea_ctrl.models import KeaPrefixPool
+        from netbox_kea_ctrl.models import KeaPrefixPool
 
-    prefix_pools = {}
-    for prefix in assigned_prefixes:
-        prefix_pools[prefix.id] = list(
-            KeaPrefixPool.objects.filter(prefix=prefix, enabled=True)
-            .order_by("start_address")
+        for prefix in assigned_prefixes:
+            prefix.pool_list = list(
+                KeaPrefixPool.objects.filter(prefix=prefix, enabled=True).order_by("start_address")
+            )
+
+        context["assigned_prefixes"] = assigned_prefixes
+        context["publish_targets"] = self.object.get_publish_targets()
+        context["prefix_verification"] = self.request.session.get(
+            f"kea_verify_prefixes_{self.object.pk}"
         )
-
-    context["prefix_pools"] = prefix_pools
-    context["publish_targets"] = self.object.get_publish_targets()
-    context["prefix_verification"] = self.request.session.get(
-        f"kea_verify_prefixes_{self.object.pk}"
-    )
-
-    return context
-
-
+        return context
+        
 class KeaSharedNetworkCreateView(CreateView):
     model = KeaSharedNetwork
     form_class = KeaSharedNetworkCreateForm
