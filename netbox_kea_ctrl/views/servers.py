@@ -4,12 +4,11 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
-from netbox_kea_ctrl.services.server_formatter import KeaServerFormatter
-
 
 from netbox_kea_ctrl.forms import KeaServerForm
 from netbox_kea_ctrl.models import KeaServer
 from netbox_kea_ctrl.services.server_discovery import KeaDiscoveryService
+from netbox_kea_ctrl.services.server_formatter import KeaServerFormatter
 
 
 class KeaServerListView(ListView):
@@ -17,6 +16,22 @@ class KeaServerListView(ListView):
     template_name = "netbox_kea_ctrl/server_list.html"
     context_object_name = "object_list"
 
+    def get_queryset(self):
+        return (
+            KeaServer.objects.all()
+            .select_related("ha_group")
+            .order_by("name")
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qs = context["object_list"]
+
+        context["server_count"] = qs.count()
+        context["enabled_count"] = qs.filter(enabled=True).count()
+        context["error_count"] = qs.exclude(last_error="").count()
+        context["discovered_count"] = qs.exclude(last_seen__isnull=True).count()
+        return context
 
 
 class KeaServerView(DetailView):
