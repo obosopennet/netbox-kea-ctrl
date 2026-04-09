@@ -47,24 +47,6 @@
         </button>
       </form>
 
-      <td class="d-flex gap-2">
-  <form method="post"
-        action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_push_prefix' pk=object.pk prefix_id=prefix.pk %}">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-sm btn-success">
-      Push
-    </button>
-  </form>
-
-  <form method="post"
-        action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_remove_prefix' pk=object.pk prefix_id=prefix.pk %}">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-sm btn-outline-danger">
-      Remove
-    </button>
-  </form>
-</td>
-
       <a class="btn btn-primary"
          href="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_edit' pk=object.pk %}">
         Edit
@@ -198,13 +180,27 @@
               <td>{{ prefix.status }}</td>
               <td>{{ prefix.description|default:"-" }}</td>
               <td>
-                <form method="post"
-                      action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_remove_prefix' pk=object.pk prefix_id=prefix.pk %}">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-sm btn-outline-danger">
-                    Remove
-                  </button>
-                </form>
+                {% if prefix.id %}
+                  <div class="d-flex gap-2">
+                    <form method="post"
+                          action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_push_prefix' pk=object.pk prefix_id=prefix.id %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-sm btn-success">
+                        Push
+                      </button>
+                    </form>
+
+                    <form method="post"
+                          action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_remove_prefix' pk=object.pk prefix_id=prefix.id %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-sm btn-outline-danger">
+                        Remove
+                      </button>
+                    </form>
+                  </div>
+                {% else %}
+                  <span class="text-muted">Unavailable</span>
+                {% endif %}
               </td>
             </tr>
           {% empty %}
