@@ -3,6 +3,7 @@ from .server_tags import KeaServerTagForm
 from .shared_networks import KeaSharedNetworkCreateForm, KeaSharedNetworkEditForm
 from .actions import MaintenanceActionForm
 from .servers import KeaServerForm
+from .prefix_assignment import PrefixAssignForm
 
 __all__ = (
     "KeaHAGroupForm",
@@ -11,4 +12,5 @@ __all__ = (
     "KeaSharedNetworkEditForm",
     "MaintenanceActionForm",
     "KeaServerForm",
+    "PrefixAssignForm",
 )
