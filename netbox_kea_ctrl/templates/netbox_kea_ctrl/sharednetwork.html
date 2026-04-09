@@ -1,5 +1,5 @@
 {% extends 'base/layout.html' %}
-{% load netbox_kea_ctrl_extras %}
+
 {% block content %}
 <style>
   .kea-wrap {
@@ -83,7 +83,7 @@
               {% for item in prefix_verification.present %}
                 <li>{{ item }}</li>
               {% empty %}
-                <li>-</li>
+                <li><span class="text-muted">None</span></li>
               {% endfor %}
             </ul>
           </div>
@@ -93,7 +93,7 @@
               {% for item in prefix_verification.missing %}
                 <li>{{ item }}</li>
               {% empty %}
-                <li>-</li>
+                <li><span class="text-muted">None</span></li>
               {% endfor %}
             </ul>
           </div>
@@ -103,7 +103,7 @@
               {% for item in prefix_verification.extra %}
                 <li>{{ item }}</li>
               {% empty %}
-                <li>-</li>
+                <li><span class="text-muted">None</span></li>
               {% endfor %}
             </ul>
           </div>
@@ -215,34 +215,33 @@
     </div>
   </div>
 
-<div class="card mb-3">
-  <div class="card-header">
-    <strong>Assigned Prefixes</strong>
-  </div>
-  <div class="card-body p-0">
-    <table class="table table-hover mb-0">
-      <thead>
-        <tr>
-          <th>Prefix</th>
-          <th>VRF</th>
-          <th>Status</th>
-          <th>Description</th>
-          <th>Pools</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for prefix in assigned_prefixes %}
+  <div class="card mb-3">
+    <div class="card-header">
+      <strong>Assigned Prefixes</strong>
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0">
+        <thead>
           <tr>
-            <td>{{ prefix.prefix }}</td>
-            <td>{{ prefix.vrf|default:"-" }}</td>
-            <td>{{ prefix.status }}</td>
-            <td>{{ prefix.description|default:"-" }}</td>
-            <td>
-              {% with pools=prefix_pools|get_item:prefix.id %}
-                {% if pools %}
+            <th>Prefix</th>
+            <th>VRF</th>
+            <th>Status</th>
+            <th>Description</th>
+            <th>Pools</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for prefix in assigned_prefixes %}
+            <tr>
+              <td>{{ prefix.prefix }}</td>
+              <td>{{ prefix.vrf|default:"-" }}</td>
+              <td>{{ prefix.status }}</td>
+              <td>{{ prefix.description|default:"-" }}</td>
+              <td>
+                {% if prefix.pool_list %}
                   <ul class="mb-0">
-                    {% for pool in pools %}
+                    {% for pool in prefix.pool_list %}
                       <li>
                         {{ pool.pool_string }}
                         <a class="btn btn-sm btn-outline-secondary ms-2"
@@ -263,44 +262,44 @@
                 {% else %}
                   <span class="text-muted">No pools</span>
                 {% endif %}
-              {% endwith %}
-            </td>
-            <td>
-              {% if prefix.id %}
-                <div class="d-flex gap-2 flex-wrap">
-                  <a class="btn btn-sm btn-outline-primary"
-                     href="{% url 'plugins:netbox_kea_ctrl:keaprefixpool_add' pk=object.pk prefix_id=prefix.id %}">
-                    Add Pool
-                  </a>
+              </td>
+              <td>
+                {% if prefix.id %}
+                  <div class="d-flex gap-2 flex-wrap">
+                    <a class="btn btn-sm btn-outline-primary"
+                       href="{% url 'plugins:netbox_kea_ctrl:keaprefixpool_add' pk=object.pk prefix_id=prefix.id %}">
+                      Add Pool
+                    </a>
 
-                  <form method="post"
-                        action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_push_prefix' pk=object.pk prefix_id=prefix.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-success">
-                      Push
-                    </button>
-                  </form>
+                    <form method="post"
+                          action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_push_prefix' pk=object.pk prefix_id=prefix.id %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-sm btn-success">
+                        Push
+                      </button>
+                    </form>
 
-                  <form method="post"
-                        action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_remove_prefix' pk=object.pk prefix_id=prefix.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-outline-danger">
-                      Remove Prefix
-                    </button>
-                  </form>
-                </div>
-              {% else %}
-                <span class="text-muted">Unavailable</span>
-              {% endif %}
-            </td>
-          </tr>
-        {% empty %}
-          <tr>
-            <td colspan="6">No active managed prefixes assigned</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+                    <form method="post"
+                          action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_remove_prefix' pk=object.pk prefix_id=prefix.id %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-sm btn-outline-danger">
+                        Remove Prefix
+                      </button>
+                    </form>
+                  </div>
+                {% else %}
+                  <span class="text-muted">Unavailable</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6">No active managed prefixes assigned</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 {% endblock %}
