@@ -9,6 +9,8 @@ from .views.shared_networks import (
     KeaSharedNetworkEditView,
     KeaSharedNetworkPushView,
     KeaSharedNetworkVerifyView,
+    KeaSharedNetworkAssignPrefixView,
+    KeaSharedNetworkRemovePrefixView,
 )
 from .views.server_tags import (
     KeaServerTagListView,
@@ -55,6 +57,8 @@ urlpatterns = [
     path("shared-networks/<int:pk>/edit/", KeaSharedNetworkEditView.as_view(), name="keasharednetwork_edit"),
     path("shared-networks/<int:pk>/push/", KeaSharedNetworkPushView.as_view(), name="keasharednetwork_push"),
     path("shared-networks/<int:pk>/verify/", KeaSharedNetworkVerifyView.as_view(), name="keasharednetwork_verify"),
+    path("shared-networks/<int:pk>/assign-prefix/", KeaSharedNetworkAssignPrefixView.as_view(), name="keasharednetwork_assign_prefix"),
+    path("shared-networks/<int:pk>/remove-prefix/<int:prefix_id>/", KeaSharedNetworkRemovePrefixView.as_view(), name="keasharednetwork_remove_prefix"),
     
     path("server-tags/", KeaServerTagListView.as_view(), name="keaservertag_list"),
     path("server-tags/add/", KeaServerTagCreateView.as_view(), name="keaservertag_add"),
