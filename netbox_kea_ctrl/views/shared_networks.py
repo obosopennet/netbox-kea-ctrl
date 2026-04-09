@@ -10,6 +10,7 @@ from netbox_kea_ctrl.services.shared_network_publisher import (
     SharedNetworkPublisher,
     SharedNetworkPublishError,
 )
+from netbox_kea_ctrl.services.shared_network_verifier import SharedNetworkVerifier
 
 
 class KeaSharedNetworkListView(ListView):
@@ -80,26 +81,79 @@ class KeaSharedNetworkPushView(View):
 
             job.generated_payload = outcome["payload"]
             job.publish_output = outcome["result"]
-            job.status = "success"
-            job.save()
 
-            messages.success(
-                request,
-                f"Shared Network '{obj.name}' pushed successfully to {target.name}."
-            )
+            kea_ok = False
+            kea_errors = []
+
+            result = outcome["result"]
+            if isinstance(result, list) and result:
+                kea_ok = all(item.get("result") == 0 for item in result)
+                kea_errors = [item.get("text", "") for item in result if item.get("result") != 0]
+            elif isinstance(result, dict):
+                kea_ok = result.get("result") == 0
+                if not kea_ok:
+                    kea_errors = [result.get("text", "Unknown Kea error")]
+            else:
+                kea_errors = ["Unexpected Kea response format"]
+
+            if kea_ok:
+                job.status = "success"
+                messages.success(
+                    request,
+                    f"Shared Network '{obj.name}' pushed successfully to {target.name}."
+                )
+            else:
+                job.status = "failed"
+                job.error_log = "\n".join(filter(None, kea_errors))
+                messages.error(
+                    request,
+                    f"Push failed: {job.error_log or 'Kea returned an error'}"
+                )
+
+            job.save()
 
         except SharedNetworkPublishError as exc:
             job.status = "failed"
             job.error_log = str(exc)
             job.save()
-
             messages.error(request, f"Push failed: {exc}")
 
         except Exception as exc:
             job.status = "failed"
             job.error_log = str(exc)
             job.save()
-
             messages.error(request, f"Push failed: {exc}")
 
         return redirect("plugins:netbox_kea_ctrl:keapublishjob", pk=job.pk)
+
+
+class KeaSharedNetworkVerifyView(View):
+    def post(self, request, pk):
+        obj = get_object_or_404(KeaSharedNetwork, pk=pk)
+
+        targets = list(obj.get_publish_targets())
+        if not targets:
+            messages.error(request, "No publish targets resolved for this Shared Network.")
+            return redirect("plugins:netbox_kea_ctrl:keasharednetwork", pk=obj.pk)
+
+        target = targets[0]
+
+        try:
+            verifier = SharedNetworkVerifier()
+            verification = verifier.verify(obj, target)
+
+            if verification["exists"]:
+                messages.success(
+                    request,
+                    f"Shared Network '{obj.name}' exists in Kea on {target.name}."
+                )
+            else:
+                messages.warning(
+                    request,
+                    f"Shared Network '{obj.name}' was not found in Kea on {target.name}."
+                )
+
+        except Exception as exc:
+            messages.error(request, f"Verification failed: {exc}")
+
+        return redirect("plugins:netbox_kea_ctrl:keasharednetwork", pk=obj.pk)
