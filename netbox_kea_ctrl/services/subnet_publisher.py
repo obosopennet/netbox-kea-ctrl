@@ -1,3 +1,4 @@
+from netbox_kea_ctrl.models import KeaPrefixPool
 from netbox_kea_ctrl.services.kea_client import KeaClient
 
 
@@ -19,9 +20,12 @@ class SubnetPublisher:
             "shared-network-name": shared_network.name,
         }
 
-        pool_range = (prefix.custom_field_data or {}).get("kea_pool_range")
-        if pool_range:
-            subnet["pools"] = [{"pool": pool_range}]
+        pools = (
+            KeaPrefixPool.objects.filter(prefix=prefix, enabled=True)
+            .order_by("start_address")
+        )
+        if pools.exists():
+            subnet["pools"] = [{"pool": pool.pool_string} for pool in pools]
 
         option_data = self._parse_option_data((prefix.custom_field_data or {}).get("kea_option_data"))
         if option_data:
