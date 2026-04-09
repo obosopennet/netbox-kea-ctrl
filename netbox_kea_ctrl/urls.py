@@ -5,6 +5,7 @@ from .views.validation import PrefixValidationView, PreviewServerTagView, Publis
 from .views.shared_networks import (
     KeaSharedNetworkListView,
     KeaSharedNetworkView,
+    KeaSharedNetworkCreateView,
     KeaSharedNetworkEditView,
 )
 from .views.server_tags import (
