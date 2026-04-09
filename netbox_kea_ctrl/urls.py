@@ -63,6 +63,16 @@ urlpatterns = [
     path("shared-networks/<int:pk>/assign-prefix/", KeaSharedNetworkAssignPrefixView.as_view(), name="keasharednetwork_assign_prefix"),
     path("shared-networks/<int:pk>/remove-prefix/<int:prefix_id>/", KeaSharedNetworkRemovePrefixView.as_view(), name="keasharednetwork_remove_prefix"),
     path("shared-networks/<int:pk>/push-prefix/<int:prefix_id>/", KeaSharedNetworkPushPrefixView.as_view(), name="keasharednetwork_push_prefix",),
+    path(
+    "shared-networks/<int:pk>/push-all-prefixes/",
+    KeaSharedNetworkPushAllPrefixesView.as_view(),
+    name="keasharednetwork_push_all_prefixes",
+),
+path(
+    "shared-networks/<int:pk>/verify-prefixes/",
+    KeaSharedNetworkVerifyPrefixesView.as_view(),
+    name="keasharednetwork_verify_prefixes",
+),
     
     path("server-tags/", KeaServerTagListView.as_view(), name="keaservertag_list"),
     path("server-tags/add/", KeaServerTagCreateView.as_view(), name="keaservertag_add"),
