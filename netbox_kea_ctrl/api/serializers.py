@@ -30,7 +30,25 @@ class KeaServerTagSerializer(NetBoxModelSerializer):
 class KeaSharedNetworkSerializer(NetBoxModelSerializer):
     class Meta:
         model = KeaSharedNetwork
-        fields = "__all__"
+        fields = (
+            "id",
+            "url",
+            "display_url",
+            "display",
+            "name",
+            "description",
+            "family",
+            "enabled",
+            "server_tag",
+            "publish_strategy",
+            "ha_group",
+            "manual_servers",
+            "option_data",
+            "created",
+            "last_updated",
+            "custom_fields",
+            "tags",
+        )
 
 
 class KeaPublishJobSerializer(NetBoxModelSerializer):
