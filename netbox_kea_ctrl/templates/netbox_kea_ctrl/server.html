@@ -1,17 +1,51 @@
 {% extends 'base/layout.html' %}
 
 {% block content %}
+<style>
+  .kea-wrap {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .kea-pre-wrap {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    margin: 0;
+    font-size: 0.9rem;
+  }
+
+  .kea-list-compact {
+    margin: 0;
+    padding-left: 1.2rem;
+  }
+</style>
+
 <div class="container">
+
+  <!-- Header -->
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="mb-0">{{ object.name }}</h1>
+    <div class="d-flex align-items-center gap-2">
+      <a class="btn btn-sm btn-outline-secondary"
+         href="{% url 'plugins:netbox_kea_ctrl:keaserver_list' %}">
+        <i class="mdi mdi-arrow-left"></i> Servers
+      </a>
+      <h1 class="mb-0">{{ object.name }}</h1>
+    </div>
+
     <div>
-      <a class="btn btn-primary" href="{% url 'plugins:netbox_kea_ctrl:keaserver_edit' pk=object.pk %}">
+      <a class="btn btn-primary"
+         href="{% url 'plugins:netbox_kea_ctrl:keaserver_edit' pk=object.pk %}">
         Edit
       </a>
     </div>
   </div>
 
+  <!-- Row 1 -->
   <div class="row">
+
+    <!-- Server Details -->
     <div class="col-md-6">
       <div class="card mb-3">
         <div class="card-header">
@@ -22,7 +56,7 @@
             <tbody>
               <tr>
                 <th style="width: 35%;">API URL</th>
-                <td>{{ object.api_url }}</td>
+                <td class="kea-wrap">{{ object.api_url }}</td>
               </tr>
               <tr>
                 <th>Service</th>
@@ -46,25 +80,29 @@
               </tr>
               <tr>
                 <th>Discovered server tag</th>
-                <td>{{ object.discovered_server_tag|default:"-" }}</td>
+                <td class="kea-wrap">{{ object.discovered_server_tag|default:"-" }}</td>
               </tr>
               <tr>
                 <th>Last error</th>
-                <td>{{ object.last_error|default:"-" }}</td>
+                <td class="kea-wrap">{{ object.last_error|default:"-" }}</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
 
+      <!-- Discover Button -->
       <div class="mb-3">
         <form method="post" action="{% url 'plugins:netbox_kea_ctrl:keaserver_discover' pk=object.pk %}">
           {% csrf_token %}
-          <button type="submit" class="btn btn-success">Discover from Kea</button>
+          <button type="submit" class="btn btn-success">
+            Discover from Kea
+          </button>
         </form>
       </div>
     </div>
 
+    <!-- Runtime Status -->
     <div class="col-md-6">
       <div class="card mb-3">
         <div class="card-header">
@@ -96,7 +134,7 @@
               <tr>
                 <th>DHCP state</th>
                 <td>
-                  <pre class="mb-0">{{ status_summary.dhcp_state|default:"{}" }}</pre>
+                  <pre class="kea-pre-wrap">{{ status_summary.dhcp_state|default:"{}" }}</pre>
                 </td>
               </tr>
             </tbody>
@@ -104,9 +142,13 @@
         </div>
       </div>
     </div>
+
   </div>
 
+  <!-- Row 2 -->
   <div class="row">
+
+    <!-- HA Status -->
     <div class="col-md-6">
       <div class="card mb-3">
         <div class="card-header">
@@ -133,7 +175,7 @@
               </tr>
               <tr>
                 <th>Peer name</th>
-                <td>{{ ha_summary.peer_name|default:"-" }}</td>
+                <td class="kea-wrap">{{ ha_summary.peer_name|default:"-" }}</td>
               </tr>
               <tr>
                 <th>Peer role</th>
@@ -149,7 +191,7 @@
               </tr>
               <tr>
                 <th>Scopes</th>
-                <td>
+                <td class="kea-wrap">
                   {% if ha_summary.scopes %}
                     {{ ha_summary.scopes|join:", " }}
                   {% else %}
@@ -163,6 +205,7 @@
       </div>
     </div>
 
+    <!-- Config Summary -->
     <div class="col-md-6">
       <div class="card mb-3">
         <div class="card-header">
@@ -173,7 +216,7 @@
             <tbody>
               <tr>
                 <th style="width: 35%;">Config hash</th>
-                <td>{{ config_summary.hash|default:"-" }}</td>
+                <td class="kea-wrap">{{ config_summary.hash|default:"-" }}</td>
               </tr>
               <tr>
                 <th>Subnet4 count</th>
@@ -187,7 +230,11 @@
                 <th>Hooks</th>
                 <td>
                   {% if config_summary.hooks %}
-                    {{ config_summary.hooks|join:", " }}
+                    <ul class="kea-list-compact">
+                      {% for hook in config_summary.hooks %}
+                        <li class="kea-wrap">{{ hook }}</li>
+                      {% endfor %}
+                    </ul>
                   {% else %}
                     -
                   {% endif %}
@@ -198,28 +245,33 @@
         </div>
       </div>
     </div>
+
   </div>
 
+  <!-- Raw Data -->
   <div class="card mb-3">
     <div class="card-header">
       <strong>Raw Data</strong>
     </div>
     <div class="card-body">
+
       <details class="mb-3">
         <summary><strong>Raw Last Status</strong></summary>
-        <pre class="mt-2">{{ object.last_status|default:"{}" }}</pre>
+        <pre class="kea-pre-wrap mt-2">{{ object.last_status|default:"{}" }}</pre>
       </details>
 
       <details class="mb-3">
         <summary><strong>Raw HA Info</strong></summary>
-        <pre class="mt-2">{{ object.discovered_ha_info|default:"{}" }}</pre>
+        <pre class="kea-pre-wrap mt-2">{{ object.discovered_ha_info|default:"{}" }}</pre>
       </details>
 
       <details>
         <summary><strong>Raw Config</strong></summary>
-        <pre class="mt-2">{{ object.discovered_config|default:"{}" }}</pre>
+        <pre class="kea-pre-wrap mt-2">{{ object.discovered_config|default:"{}" }}</pre>
       </details>
+
     </div>
   </div>
+
 </div>
 {% endblock %}
