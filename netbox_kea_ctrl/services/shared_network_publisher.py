@@ -1,4 +1,4 @@
-from netbox_kea_ctrl.services.kea_client import KeaClient, KeaAPIError
+from netbox_kea_ctrl.services.kea_client import KeaClient
 
 
 class SharedNetworkPublishError(Exception):
@@ -20,9 +20,9 @@ class SharedNetworkPublisher:
                 "shared-networks": [
                     {
                         "name": shared_network.name,
-                        "server-tags": [shared_network.server_tag.name],
                     }
-                ]
+                ],
+                "server-tags": [shared_network.server_tag.name],
             },
         }
 
