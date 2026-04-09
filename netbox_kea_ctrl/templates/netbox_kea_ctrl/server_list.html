@@ -49,29 +49,40 @@
   {% for group in grouped_ha_servers %}
     <div class="card mb-4">
       <div class="card-header">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-start flex-wrap">
           <div>
-            <strong>
+            <div class="fw-bold fs-5">
               <a href="{% url 'plugins:netbox_kea_ctrl:keahagroup' pk=group.ha_group.pk %}">
                 {{ group.ha_group.name }}
               </a>
-            </strong>
+            </div>
+            <div class="text-muted mt-1">
+              {% if group.ha_group.description %}
+                {{ group.ha_group.description }}
+              {% else %}
+                HA group for {{ group.ha_group.service }}
+              {% endif %}
+            </div>
           </div>
-          <div class="text-muted">
-            mode={{ group.ha_group.mode }} |
-            service={{ group.ha_group.service }} |
-            members={{ group.count }}
+
+          <div class="text-muted text-end mt-1">
+            <div><strong>Mode:</strong> {{ group.ha_group.mode }}</div>
+            <div><strong>Service:</strong> {{ group.ha_group.service }}</div>
+            <div><strong>Members:</strong> {{ group.count }}</div>
           </div>
         </div>
       </div>
 
-      <div class="card-body">
-        <div class="mb-3">
-          <strong>Detected primary:</strong>
-          {{ group.ha_group.detected_primary_server|default:"-" }}
-          &nbsp;&nbsp;
-          <strong>Detected secondary:</strong>
-          {{ group.ha_group.detected_secondary_server|default:"-" }}
+      <div class="card-body border-bottom">
+        <div class="row">
+          <div class="col-md-6">
+            <strong>Detected primary:</strong>
+            {{ group.ha_group.detected_primary_server|default:"-" }}
+          </div>
+          <div class="col-md-6">
+            <strong>Detected secondary:</strong>
+            {{ group.ha_group.detected_secondary_server|default:"-" }}
+          </div>
         </div>
       </div>
 
@@ -82,10 +93,10 @@
               <th>Name</th>
               <th>API URL</th>
               <th>Service</th>
-              <th>Role</th>
+              <th>Mapped Role</th>
               <th>Discovered Tag</th>
-              <th>Detected Local Role</th>
-              <th>Detected Local State</th>
+              <th>Detected Role</th>
+              <th>Detected State</th>
               <th>Last Seen</th>
               <th>Status</th>
               <th>Error</th>
@@ -130,13 +141,24 @@
         </table>
       </div>
     </div>
-  {% empty %}
   {% endfor %}
 
   <div class="card mb-4">
     <div class="card-header">
-      <strong>Unassigned Servers</strong>
+      <div class="d-flex justify-content-between align-items-start flex-wrap">
+        <div>
+          <div class="fw-bold fs-5">Unassigned Servers</div>
+          <div class="text-muted mt-1">
+            Servers not currently mapped to any HA group
+          </div>
+        </div>
+
+        <div class="text-muted text-end mt-1">
+          <div><strong>Members:</strong> {{ unassigned_servers|length }}</div>
+        </div>
+      </div>
     </div>
+
     <div class="card-body p-0">
       <table class="table table-hover mb-0">
         <thead>
@@ -144,10 +166,10 @@
             <th>Name</th>
             <th>API URL</th>
             <th>Service</th>
-            <th>Role</th>
+            <th>Mapped Role</th>
             <th>Discovered Tag</th>
-            <th>Detected Local Role</th>
-            <th>Detected Local State</th>
+            <th>Detected Role</th>
+            <th>Detected State</th>
             <th>Last Seen</th>
             <th>Status</th>
             <th>Error</th>
