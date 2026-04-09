@@ -7,6 +7,7 @@ from .views.shared_networks import (
     KeaSharedNetworkView,
     KeaSharedNetworkCreateView,
     KeaSharedNetworkEditView,
+    KeaSharedNetworkPushView,
 )
 from .views.server_tags import (
     KeaServerTagListView,
