@@ -2,6 +2,7 @@ from netbox.api.serializers import NetBoxModelSerializer
 
 from netbox_kea_ctrl.models import (
     KeaHAGroup,
+    KeaPrefixPool,
     KeaPublishJob,
     KeaServer,
     KeaServerTag,
@@ -49,6 +50,12 @@ class KeaSharedNetworkSerializer(NetBoxModelSerializer):
             "custom_fields",
             "tags",
         )
+
+
+class KeaPrefixPoolSerializer(NetBoxModelSerializer):
+    class Meta:
+        model = KeaPrefixPool
+        fields = "__all__"
 
 
 class KeaPublishJobSerializer(NetBoxModelSerializer):
