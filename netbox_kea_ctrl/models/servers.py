@@ -37,6 +37,17 @@ class KeaServer(NetBoxModel):
     request_timeout = models.PositiveIntegerField(default=5)
 
     discovered_server_tag = models.CharField(max_length=100, blank=True)
+
+    discovered_ha_mode = models.CharField(max_length=64, blank=True)
+    discovered_this_server_name = models.CharField(max_length=100, blank=True)
+    discovered_local_role = models.CharField(max_length=32, blank=True)
+    discovered_local_state = models.CharField(max_length=64, blank=True)
+    discovered_peer_name = models.CharField(max_length=100, blank=True)
+    discovered_peer_role = models.CharField(max_length=32, blank=True)
+    discovered_peer_state = models.CharField(max_length=64, blank=True)
+    discovered_communication_state = models.CharField(max_length=64, blank=True)
+    discovered_scopes = models.JSONField(default=list, blank=True)
+
     discovered_ha_info = models.JSONField(default=dict, blank=True)
     discovered_config = models.JSONField(default=dict, blank=True)
 
