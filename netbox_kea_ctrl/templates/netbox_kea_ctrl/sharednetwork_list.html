@@ -2,23 +2,62 @@
 
 {% block content %}
 <div class="container">
-  <h1>Shared Networks</h1>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center gap-2">
+      <a class="btn btn-sm btn-outline-secondary"
+         href="{% url 'plugins:netbox_kea_ctrl:dashboard' %}">
+        <i class="mdi mdi-arrow-left"></i> Kea Control
+      </a>
+      <h1 class="mb-0">Shared Networks</h1>
+    </div>
 
-  <p>
-    <a href="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_add' %}">Add Shared Network</a>
-  </p>
+    <div>
+      <a class="btn btn-primary" href="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_add' %}">
+        Add Shared Network
+      </a>
+    </div>
+  </div>
 
-  <ul>
-    {% for obj in object_list %}
-      <li>
-        <a href="{% url 'plugins:netbox_kea_ctrl:keasharednetwork' pk=obj.pk %}">
-          {{ obj.name }}
-        </a>
-        - {{ obj.family }} - {{ obj.server_tag }} - enabled={{ obj.enabled }}
-      </li>
-    {% empty %}
-      <li>No shared networks found</li>
-    {% endfor %}
-  </ul>
+  <div class="card">
+    <div class="card-header">
+      <strong>Shared Network Inventory</strong>
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Family</th>
+            <th>Server Tag</th>
+            <th>Publish Strategy</th>
+            <th>HA Group</th>
+            <th>Publish Targets</th>
+            <th>Enabled</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for obj in object_list %}
+            <tr>
+              <td>
+                <a href="{% url 'plugins:netbox_kea_ctrl:keasharednetwork' pk=obj.pk %}">
+                  {{ obj.name }}
+                </a>
+              </td>
+              <td>{{ obj.family }}</td>
+              <td>{{ obj.server_tag }}</td>
+              <td>{{ obj.publish_strategy }}</td>
+              <td>{{ obj.ha_group|default:"-" }}</td>
+              <td>{{ obj.publish_targets_display }}</td>
+              <td>{{ obj.enabled }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="7">No shared networks found</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 {% endblock %}
