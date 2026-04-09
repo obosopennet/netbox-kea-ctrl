@@ -19,36 +19,21 @@
       <h1 class="mb-0">{{ object.name }}</h1>
     </div>
 
-    <div>
+    <div class="d-flex gap-2">
+      <form method="post" action="{% url 'plugins:netbox_kea_ctrl:keaservertag_push' pk=object.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">
+          Register in CB
+        </button>
+      </form>
+
       <a class="btn btn-primary"
          href="{% url 'plugins:netbox_kea_ctrl:keaservertag_edit' pk=object.pk %}">
         Edit
       </a>
     </div>
   </div>
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <div class="d-flex align-items-center gap-2">
-    <a class="btn btn-sm btn-outline-secondary"
-       href="{% url 'plugins:netbox_kea_ctrl:keaservertag_list' %}">
-      <i class="mdi mdi-arrow-left"></i> Server Tags
-    </a>
-    <h1 class="mb-0">{{ object.name }}</h1>
-  </div>
 
-  <div class="d-flex gap-2">
-    <form method="post" action="{% url 'plugins:netbox_kea_ctrl:keaservertag_push' pk=object.pk %}">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-success">
-        Register in CB
-      </button>
-    </form>
-
-    <a class="btn btn-primary"
-       href="{% url 'plugins:netbox_kea_ctrl:keaservertag_edit' pk=object.pk %}">
-      Edit
-    </a>
-  </div>
-</div>
   <div class="row">
     <div class="col-md-6">
       <div class="card mb-3">
