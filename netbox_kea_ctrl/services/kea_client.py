@@ -64,3 +64,31 @@ class KeaClient:
 
     def list_commands(self, service: str):
         return self.call("list-commands", service=service)
+    def call_raw(self, payload: dict):
+        data = json.dumps(payload).encode("utf-8")
+        req = request.Request(
+            self.base_url,
+            data=data,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+
+        try:
+            with request.urlopen(
+                req,
+                timeout=self.timeout,
+                context=self._build_ssl_context(),
+            ) as resp:
+                raw = resp.read().decode("utf-8")
+        except error.HTTPError as exc:
+            body = exc.read().decode("utf-8", errors="replace")
+            raise KeaAPIError(f"HTTP {exc.code}: {body}") from exc
+        except Exception as exc:
+            raise KeaAPIError(str(exc)) from exc
+
+        try:
+            parsed = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            raise KeaAPIError(f"Invalid JSON response: {raw}") from exc
+
+        return parsed
