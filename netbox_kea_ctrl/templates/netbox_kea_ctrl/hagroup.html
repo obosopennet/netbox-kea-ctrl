@@ -2,42 +2,105 @@
 
 {% block content %}
 <div class="container">
-  <h1>{{ object.name }}</h1>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">{{ object.name }}</h1>
+    <div>
+      <a class="btn btn-primary" href="{% url 'plugins:netbox_kea_ctrl:keahagroup_edit' pk=object.pk %}">
+        Edit
+      </a>
+    </div>
+  </div>
 
-  <p>
-    <a href="{% url 'plugins:netbox_kea_ctrl:keahagroup_edit' pk=object.pk %}">Edit</a>
-  </p>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-header">
+          <strong>HA Group Details</strong>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <tbody>
+              <tr>
+                <th style="width: 35%;">Name</th>
+                <td>{{ object.name }}</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td>{{ object.description|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Mode</th>
+                <td>{{ object.mode }}</td>
+              </tr>
+              <tr>
+                <th>Service</th>
+                <td>{{ object.service }}</td>
+              </tr>
+              <tr>
+                <th>Enabled</th>
+                <td>{{ object.enabled }}</td>
+              </tr>
+              <tr>
+                <th>Detected primary</th>
+                <td>{{ object.detected_primary_server|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Detected secondary</th>
+                <td>{{ object.detected_secondary_server|default:"-" }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <h2>Details</h2>
-  <ul>
-    <li><strong>Name:</strong> {{ object.name }}</li>
-    <li><strong>Description:</strong> {{ object.description|default:"-" }}</li>
-    <li><strong>Mode:</strong> {{ object.mode }}</li>
-    <li><strong>Enabled:</strong> {{ object.enabled }}</li>
-    <li><strong>Primary name:</strong> {{ object.primary_name|default:"-" }}</li>
-    <li><strong>Secondary name:</strong> {{ object.secondary_name|default:"-" }}</li>
-    <li><strong>Primary control agent URL:</strong> {{ object.primary_control_agent_url|default:"-" }}</li>
-    <li><strong>Secondary control agent URL:</strong> {{ object.secondary_control_agent_url|default:"-" }}</li>
-    <li><strong>Last status check:</strong> {{ object.last_status_check|default:"-" }}</li>
-  </ul>
-
-  <h2>Last Status</h2>
-  <pre>{{ object.last_status|default:"{}" }}</pre>
-
-  <h2>Actions</h2>
-  <form method="post" action="{% url 'plugins:netbox_kea_ctrl:keahagroup_refresh' pk=object.pk %}" style="margin-bottom: 1rem;">
-    {% csrf_token %}
-    <button type="submit">Refresh Status</button>
-  </form>
-
-  <form method="post" action="{% url 'plugins:netbox_kea_ctrl:keahagroup_set_maintenance' pk=object.pk %}" style="margin-bottom: 1rem;">
-    {% csrf_token %}
-    <button type="submit">Set Maintenance</button>
-  </form>
-
-  <form method="post" action="{% url 'plugins:netbox_kea_ctrl:keahagroup_clear_maintenance' pk=object.pk %}">
-    {% csrf_token %}
-    <button type="submit">Clear Maintenance</button>
-  </form>
+  <div class="card mb-3">
+    <div class="card-header">
+      <strong>Member Servers</strong>
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>API URL</th>
+            <th>Service</th>
+            <th>Role</th>
+            <th>Detected local role</th>
+            <th>Detected local state</th>
+            <th>Detected peer</th>
+            <th>Detected peer state</th>
+            <th>Server tag</th>
+            <th>Last seen</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for server in object.servers.all %}
+            <tr>
+              <td>
+                <a href="{% url 'plugins:netbox_kea_ctrl:keaserver' pk=server.pk %}">
+                  {{ server.name }}
+                </a>
+              </td>
+              <td>{{ server.api_url }}</td>
+              <td>{{ server.service }}</td>
+              <td>{{ server.role }}</td>
+              <td>{{ server.discovered_local_role|default:"-" }}</td>
+              <td>{{ server.discovered_local_state|default:"-" }}</td>
+              <td>{{ server.discovered_peer_name|default:"-" }}</td>
+              <td>{{ server.discovered_peer_state|default:"-" }}</td>
+              <td>{{ server.discovered_server_tag|default:"-" }}</td>
+              <td>{{ server.last_seen|default:"-" }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="10">No member servers</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 {% endblock %}
