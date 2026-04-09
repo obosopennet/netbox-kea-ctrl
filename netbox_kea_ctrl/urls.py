@@ -11,6 +11,7 @@ from .views.shared_networks import (
 from .views.server_tags import (
     KeaServerTagListView,
     KeaServerTagView,
+    KeaServerTagCreateView,
     KeaServerTagEditView,
 )
 from .views.ha import (
