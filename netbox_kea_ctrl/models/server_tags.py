@@ -21,7 +21,7 @@ class KeaServerTag(NetBoxModel):
     configuration_backend_target = models.CharField(
         max_length=255,
         blank=True,
-        help_text="Identifier used by the publisher/backend adapter",
+        help_text="Optional target identifier used by the publish adapter.",
     )
 
     class Meta:
