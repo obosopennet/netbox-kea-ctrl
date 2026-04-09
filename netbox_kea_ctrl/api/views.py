@@ -2,6 +2,7 @@ from netbox.api.viewsets import NetBoxModelViewSet
 
 from netbox_kea_ctrl.models import (
     KeaHAGroup,
+    KeaPrefixPool,
     KeaPublishJob,
     KeaServer,
     KeaServerTag,
@@ -9,6 +10,7 @@ from netbox_kea_ctrl.models import (
 )
 from .serializers import (
     KeaHAGroupSerializer,
+    KeaPrefixPoolSerializer,
     KeaPublishJobSerializer,
     KeaServerSerializer,
     KeaServerTagSerializer,
@@ -34,6 +36,11 @@ class KeaServerTagViewSet(NetBoxModelViewSet):
 class KeaSharedNetworkViewSet(NetBoxModelViewSet):
     queryset = KeaSharedNetwork.objects.all()
     serializer_class = KeaSharedNetworkSerializer
+
+
+class KeaPrefixPoolViewSet(NetBoxModelViewSet):
+    queryset = KeaPrefixPool.objects.all()
+    serializer_class = KeaPrefixPoolSerializer
 
 
 class KeaPublishJobViewSet(NetBoxModelViewSet):
