@@ -64,7 +64,8 @@ class KeaSharedNetworkEditForm(NetBoxModelForm):
         return raw
 
     def clean(self):
-        cleaned_data = super().clean()
+        super().clean()
+        cleaned_data = self.cleaned_data
 
         publish_strategy = cleaned_data.get("publish_strategy")
         ha_group = cleaned_data.get("ha_group")
