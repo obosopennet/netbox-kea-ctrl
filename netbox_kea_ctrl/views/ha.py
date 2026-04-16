@@ -1,7 +1,4 @@
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 from netbox_kea_ctrl.forms import KeaHAGroupForm
@@ -12,6 +9,13 @@ class KeaHAGroupListView(ListView):
     model = KeaHAGroup
     template_name = "netbox_kea_ctrl/hagroup_list.html"
     context_object_name = "object_list"
+
+    def get_queryset(self):
+        return (
+            KeaHAGroup.objects.all()
+            .select_related("primary_server", "secondary_server")
+            .order_by("name")
+        )
 
 
 class KeaHAGroupView(DetailView):
@@ -31,32 +35,3 @@ class KeaHAGroupEditView(UpdateView):
     form_class = KeaHAGroupForm
     template_name = "netbox_kea_ctrl/object_edit.html"
     success_url = reverse_lazy("plugins:netbox_kea_ctrl:keahagroup_list")
-
-
-class HARefreshStatusView(View):
-    def post(self, request, pk):
-        obj = get_object_or_404(KeaHAGroup, pk=pk)
-        return JsonResponse({
-            "status": "not-implemented",
-            "ha_group": obj.name,
-        })
-
-
-class HASetMaintenanceView(View):
-    def post(self, request, pk):
-        obj = get_object_or_404(KeaHAGroup, pk=pk)
-        return JsonResponse({
-            "status": "not-implemented",
-            "action": "set-maintenance",
-            "ha_group": obj.name,
-        })
-
-
-class HAClearMaintenanceView(View):
-    def post(self, request, pk):
-        obj = get_object_or_404(KeaHAGroup, pk=pk)
-        return JsonResponse({
-            "status": "not-implemented",
-            "action": "clear-maintenance",
-            "ha_group": obj.name,
-        })
