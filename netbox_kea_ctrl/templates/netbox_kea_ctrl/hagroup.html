@@ -3,9 +3,17 @@
 {% block content %}
 <div class="container">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="mb-0">{{ object.name }}</h1>
+    <div class="d-flex align-items-center gap-2">
+      <a class="btn btn-sm btn-outline-secondary"
+         href="{% url 'plugins:netbox_kea_ctrl:keahagroup_list' %}">
+        <i class="mdi mdi-arrow-left"></i> HA Groups
+      </a>
+      <h1 class="mb-0">{{ object.name }}</h1>
+    </div>
+
     <div>
-      <a class="btn btn-primary" href="{% url 'plugins:netbox_kea_ctrl:keahagroup_edit' pk=object.pk %}">
+      <a class="btn btn-primary"
+         href="{% url 'plugins:netbox_kea_ctrl:keahagroup_edit' pk=object.pk %}">
         Edit
       </a>
     </div>
@@ -33,73 +41,47 @@
                 <td>{{ object.mode }}</td>
               </tr>
               <tr>
-                <th>Service</th>
-                <td>{{ object.service }}</td>
+                <th>Primary Server</th>
+                <td>{{ object.primary_server|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Secondary Server</th>
+                <td>{{ object.secondary_server|default:"-" }}</td>
               </tr>
               <tr>
                 <th>Enabled</th>
                 <td>{{ object.enabled }}</td>
-              </tr>
-              <tr>
-                <th>Detected primary</th>
-                <td>{{ object.detected_primary_server|default:"-" }}</td>
-              </tr>
-              <tr>
-                <th>Detected secondary</th>
-                <td>{{ object.detected_secondary_server|default:"-" }}</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="card mb-3">
-    <div class="card-header">
-      <strong>Member Servers</strong>
-    </div>
-    <div class="card-body p-0">
-      <table class="table table-hover mb-0">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>API URL</th>
-            <th>Service</th>
-            <th>Role</th>
-            <th>Detected local role</th>
-            <th>Detected local state</th>
-            <th>Detected peer</th>
-            <th>Detected peer state</th>
-            <th>Server tag</th>
-            <th>Last seen</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for server in object.servers.all %}
-            <tr>
-              <td>
-                <a href="{% url 'plugins:netbox_kea_ctrl:keaserver' pk=server.pk %}">
-                  {{ server.name }}
-                </a>
-              </td>
-              <td>{{ server.api_url }}</td>
-              <td>{{ server.service }}</td>
-              <td>{{ server.role }}</td>
-              <td>{{ server.discovered_local_role|default:"-" }}</td>
-              <td>{{ server.discovered_local_state|default:"-" }}</td>
-              <td>{{ server.discovered_peer_name|default:"-" }}</td>
-              <td>{{ server.discovered_peer_state|default:"-" }}</td>
-              <td>{{ server.discovered_server_tag|default:"-" }}</td>
-              <td>{{ server.last_seen|default:"-" }}</td>
-            </tr>
-          {% empty %}
-            <tr>
-              <td colspan="10">No member servers</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-header">
+          <strong>Global Lease Settings</strong>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <tbody>
+              <tr>
+                <th style="width: 35%;">Valid Lifetime</th>
+                <td>{{ object.valid_lifetime|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Minimum Valid Lifetime</th>
+                <td>{{ object.min_valid_lifetime|default:"-" }}</td>
+              </tr>
+              <tr>
+                <th>Maximum Valid Lifetime</th>
+                <td>{{ object.max_valid_lifetime|default:"-" }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </div>
