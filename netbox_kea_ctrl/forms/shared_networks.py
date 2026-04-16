@@ -1,4 +1,3 @@
-from django.core.exceptions import ValidationError
 from netbox.forms import NetBoxModelForm
 
 from netbox_kea_ctrl.models import KeaSharedNetwork
