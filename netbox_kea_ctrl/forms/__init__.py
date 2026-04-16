@@ -1,5 +1,4 @@
 from .ha import KeaHAGroupForm
-from .maintenance import MaintenanceActionForm
 from .pools import KeaPrefixPoolForm
 from .prefix_assignment import PrefixAssignForm
 from .server_tags import KeaServerTagForm
@@ -11,7 +10,6 @@ __all__ = (
     "KeaServerTagForm",
     "KeaSharedNetworkCreateForm",
     "KeaSharedNetworkEditForm",
-    "MaintenanceActionForm",
     "KeaServerForm",
     "PrefixAssignForm",
     "KeaPrefixPoolForm",
