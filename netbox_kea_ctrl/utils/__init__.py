@@ -1,11 +1,7 @@
-from extras.models import CustomField
+from .custom_fields import get_prefix_custom_field
+from .raw_config import parse_raw_config
 
-
-def get_prefix_custom_field(name: str):
-    """
-    Return a Prefix custom field by name if it exists, otherwise None.
-    """
-    try:
-        return CustomField.objects.get(name=name, object_types__model="prefix")
-    except CustomField.DoesNotExist:
-        return None
+__all__ = (
+    "get_prefix_custom_field",
+    "parse_raw_config",
+)
