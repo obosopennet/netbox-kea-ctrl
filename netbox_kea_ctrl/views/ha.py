@@ -42,16 +42,6 @@ class KeaHAGroupEditView(UpdateView):
 
 
 class HARefreshStatusView(View):
-    """
-    Midlertidig placeholder for URL-er som allerede finnes i pluginen.
-    Senere kan denne hente faktisk HA-status fra Kea.
-    """
-
-    def post(self, request, pk):
-        obj = get_object_or_404(KeaHAGroup, pk=pk)
-        messages.info(request, f"HA status refresh is not implemented yet for '{obj.name}'.")
-        return redirect("plugins:netbox_kea_ctrl:keahagroup", pk=obj.pk)
-
     def get(self, request, pk):
         obj = get_object_or_404(KeaHAGroup, pk=pk)
         return JsonResponse(
@@ -62,24 +52,21 @@ class HARefreshStatusView(View):
             }
         )
 
-
-class HAFailoverView(View):
-    """
-    Placeholder for manual failover action.
-    """
-
     def post(self, request, pk):
         obj = get_object_or_404(KeaHAGroup, pk=pk)
-        messages.warning(request, f"Manual failover is not implemented yet for '{obj.name}'.")
+        messages.info(request, f"HA status refresh is not implemented yet for '{obj.name}'.")
         return redirect("plugins:netbox_kea_ctrl:keahagroup", pk=obj.pk)
 
 
-class HAMaintenanceView(View):
-    """
-    Placeholder for maintenance mode actions.
-    """
-
+class HASetMaintenanceView(View):
     def post(self, request, pk):
         obj = get_object_or_404(KeaHAGroup, pk=pk)
-        messages.warning(request, f"Maintenance mode action is not implemented yet for '{obj.name}'.")
+        messages.warning(request, f"Set maintenance is not implemented yet for '{obj.name}'.")
+        return redirect("plugins:netbox_kea_ctrl:keahagroup", pk=obj.pk)
+
+
+class HAClearMaintenanceView(View):
+    def post(self, request, pk):
+        obj = get_object_or_404(KeaHAGroup, pk=pk)
+        messages.warning(request, f"Clear maintenance is not implemented yet for '{obj.name}'.")
         return redirect("plugins:netbox_kea_ctrl:keahagroup", pk=obj.pk)
