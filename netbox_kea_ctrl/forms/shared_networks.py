@@ -1,6 +1,8 @@
+from django.core.exceptions import ValidationError
 from netbox.forms import NetBoxModelForm
 
 from netbox_kea_ctrl.models import KeaSharedNetwork
+from netbox_kea_ctrl.utils.raw_config import parse_raw_config
 
 
 class KeaSharedNetworkCreateForm(NetBoxModelForm):
@@ -15,11 +17,21 @@ class KeaSharedNetworkCreateForm(NetBoxModelForm):
             "ha_group",
             "enabled",
             "option_data",
+            "raw_option_data",
         )
         labels = {
             "server_tag": "Kea Server Tag",
             "ha_group": "Mapped HA Group",
+            "raw_option_data": "Advanced Raw Option Data",
         }
+        help_texts = {
+            "raw_option_data": "Optional advanced JSON/YAML for Kea-specific option structures.",
+        }
+
+    def clean_raw_option_data(self):
+        raw = self.cleaned_data.get("raw_option_data", "")
+        parse_raw_config(raw, "raw_option_data")
+        return raw
 
 
 class KeaSharedNetworkEditForm(NetBoxModelForm):
@@ -35,12 +47,22 @@ class KeaSharedNetworkEditForm(NetBoxModelForm):
             "manual_servers",
             "enabled",
             "option_data",
+            "raw_option_data",
         )
         labels = {
             "server_tag": "Kea Server Tag",
             "ha_group": "Mapped HA Group",
             "manual_servers": "Manual Publish Targets",
+            "raw_option_data": "Advanced Raw Option Data",
         }
+        help_texts = {
+            "raw_option_data": "Optional advanced JSON/YAML for Kea-specific option structures.",
+        }
+
+    def clean_raw_option_data(self):
+        raw = self.cleaned_data.get("raw_option_data", "")
+        parse_raw_config(raw, "raw_option_data")
+        return raw
 
     def clean(self):
         cleaned_data = super().clean()
@@ -55,7 +77,10 @@ class KeaSharedNetworkEditForm(NetBoxModelForm):
 
         if publish_strategy == KeaSharedNetwork.PUBLISH_STRATEGY_MANUAL:
             if not manual_servers or manual_servers.count() == 0:
-                self.add_error("manual_servers", "At least one Kea Server must be selected when publish strategy is 'Manual Server Selection'.")
+                self.add_error(
+                    "manual_servers",
+                    "At least one Kea Server must be selected when publish strategy is 'Manual Server Selection'.",
+                )
 
         if ha_group and server_tag and getattr(server_tag, "ha_group", None):
             if server_tag.ha_group_id != ha_group.id:
