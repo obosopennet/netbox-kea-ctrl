@@ -5,6 +5,8 @@ from netbox.models import NetBoxModel
 from ipam.models import Prefix
 from netaddr import IPAddress
 
+from netbox_kea_ctrl.utils.raw_config import parse_raw_config
+
 
 class KeaPrefixPool(NetBoxModel):
     prefix = models.ForeignKey(
@@ -16,6 +18,7 @@ class KeaPrefixPool(NetBoxModel):
     end_address = models.GenericIPAddressField(protocol="IPv4")
     description = models.TextField(blank=True)
     enabled = models.BooleanField(default=True)
+    raw_option_data = models.TextField(blank=True)
 
     class Meta:
         ordering = ("prefix", "start_address")
@@ -55,6 +58,14 @@ class KeaPrefixPool(NetBoxModel):
                     errors["end_address"] = "End address cannot be the network address."
                 elif end_ip == broadcast:
                     errors["end_address"] = "End address cannot be the broadcast address."
+
+        try:
+            parse_raw_config(self.raw_option_data, "raw_option_data")
+        except ValidationError as exc:
+            if hasattr(exc, "message_dict"):
+                errors.update(exc.message_dict)
+            else:
+                errors["raw_option_data"] = exc.messages
 
         if errors:
             raise ValidationError(errors)
