@@ -3,6 +3,7 @@ from django.db import models
 from netbox.models import NetBoxModel
 
 from netbox_kea_ctrl.choices import FAMILY_CHOICES, FAMILY_IPV4
+from netbox_kea_ctrl.utils.raw_config import parse_raw_config
 
 
 class KeaSharedNetwork(NetBoxModel):
@@ -46,6 +47,7 @@ class KeaSharedNetwork(NetBoxModel):
     )
 
     option_data = models.TextField(blank=True)
+    raw_option_data = models.TextField(blank=True)
 
     class Meta:
         ordering = ("name",)
@@ -65,6 +67,14 @@ class KeaSharedNetwork(NetBoxModel):
             if self.server_tag.ha_group_id != self.ha_group_id:
                 errors["server_tag"] = "Selected server tag belongs to a different HA Group."
                 errors["ha_group"] = "Selected HA Group does not match the selected server tag."
+
+        try:
+            parse_raw_config(self.raw_option_data, "raw_option_data")
+        except ValidationError as exc:
+            if hasattr(exc, "message_dict"):
+                errors.update(exc.message_dict)
+            else:
+                errors["raw_option_data"] = exc.messages
 
         if errors:
             raise ValidationError(errors)
