@@ -1,6 +1,5 @@
-from ipam.api.serializers import PrefixSerializer
-from netbox.api.serializers import NetBoxModelSerializer
 from rest_framework import serializers
+from netbox.api.serializers import NetBoxModelSerializer
 
 from netbox_kea_ctrl.models import (
     KeaHAGroup,
@@ -47,6 +46,7 @@ class KeaSharedNetworkSerializer(NetBoxModelSerializer):
             "ha_group",
             "manual_servers",
             "option_data",
+            "raw_option_data",
             "created",
             "last_updated",
             "custom_fields",
@@ -70,6 +70,7 @@ class KeaPrefixPoolSerializer(NetBoxModelSerializer):
             "end_address",
             "description",
             "enabled",
+            "raw_option_data",
             "created",
             "last_updated",
         )
