@@ -18,43 +18,50 @@
 </style>
 
 <div class="container">
+
   <div class="d-flex justify-content-between align-items-center mb-3">
     <div class="d-flex align-items-center gap-2">
       <a class="btn btn-sm btn-outline-secondary"
          href="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_list' %}">
         <i class="mdi mdi-arrow-left"></i> Shared Networks
       </a>
+
       <h1 class="mb-0">{{ object.name }}</h1>
     </div>
 
     <div class="d-flex gap-2 flex-wrap">
+
       <a class="btn btn-outline-primary"
          href="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_assign_prefix' pk=object.pk %}">
         Add Prefix
       </a>
 
-      <form method="post" action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_verify' pk=object.pk %}">
+      <form method="post"
+            action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_verify' pk=object.pk %}">
         {% csrf_token %}
         <button type="submit" class="btn btn-outline-success">
           Verify Network in Kea
         </button>
       </form>
 
-      <form method="post" action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_verify_prefixes' pk=object.pk %}">
+      <form method="post"
+            action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_verify_prefixes' pk=object.pk %}">
         {% csrf_token %}
         <button type="submit" class="btn btn-outline-success">
           Verify Prefixes
         </button>
       </form>
 
-      <form method="post" action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_push' pk=object.pk %}">
+      <form method="post"
+            action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_push' pk=object.pk %}">
         {% csrf_token %}
         <button type="submit" class="btn btn-success">
           Push Network
         </button>
       </form>
 
-      <form method="post" action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_push_all_prefixes' pk=object.pk %}">
+      <form method="post"
+            action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_push_all_prefixes' pk=object.pk %}">
         {% csrf_token %}
         <button type="submit" class="btn btn-success">
           Push All Prefixes
@@ -65,94 +72,139 @@
          href="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_edit' pk=object.pk %}">
         Edit
       </a>
+
     </div>
   </div>
+
+  {% if form.errors %}
+    <div class="alert alert-danger">
+      <strong>Formen kunne ikke lagres.</strong>
+      <ul class="mb-0">
+        {% for field, errors in form.errors.items %}
+          {% for error in errors %}
+            <li>
+              <strong>{{ field }}:</strong> {{ error }}
+            </li>
+          {% endfor %}
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
 
   {% if prefix_verification %}
     <div class="card mb-3">
       <div class="card-header">
         <strong>Prefix Verification</strong>
       </div>
+
       <div class="card-body">
-        <p><strong>Target Server:</strong> {{ prefix_verification.target_server }}</p>
+        <p>
+          <strong>Target Server:</strong>
+          {{ prefix_verification.target_server }}
+        </p>
 
         <div class="row">
+
           <div class="col-md-4">
             <h6>Present</h6>
+
             <ul>
               {% for item in prefix_verification.present %}
                 <li>{{ item }}</li>
               {% empty %}
-                <li><span class="text-muted">None</span></li>
+                <li>
+                  <span class="text-muted">None</span>
+                </li>
               {% endfor %}
             </ul>
           </div>
+
           <div class="col-md-4">
             <h6>Missing</h6>
+
             <ul>
               {% for item in prefix_verification.missing %}
                 <li>{{ item }}</li>
               {% empty %}
-                <li><span class="text-muted">None</span></li>
+                <li>
+                  <span class="text-muted">None</span>
+                </li>
               {% endfor %}
             </ul>
           </div>
+
           <div class="col-md-4">
             <h6>Extra in Kea</h6>
+
             <ul>
               {% for item in prefix_verification.extra %}
                 <li>{{ item }}</li>
               {% empty %}
-                <li><span class="text-muted">None</span></li>
+                <li>
+                  <span class="text-muted">None</span>
+                </li>
               {% endfor %}
             </ul>
           </div>
+
         </div>
       </div>
     </div>
   {% endif %}
 
   <div class="row">
+
     <div class="col-md-6">
+
       <div class="card mb-3">
         <div class="card-header">
           <strong>Shared Network Details</strong>
         </div>
+
         <div class="card-body p-0">
           <table class="table table-hover mb-0">
             <tbody>
+
               <tr>
                 <th style="width: 35%;">Name</th>
                 <td>{{ object.name }}</td>
               </tr>
+
               <tr>
                 <th>Description</th>
                 <td>{{ object.description|default:"-" }}</td>
               </tr>
+
               <tr>
                 <th>Family</th>
                 <td>{{ object.family }}</td>
               </tr>
+
               <tr>
                 <th>Server Tag</th>
                 <td>{{ object.server_tag|default:"-" }}</td>
               </tr>
+
               <tr>
                 <th>Publish Strategy</th>
                 <td>{{ object.publish_strategy|default:"-" }}</td>
               </tr>
+
               <tr>
                 <th>HA Group</th>
                 <td>{{ object.ha_group|default:"-" }}</td>
               </tr>
+
               <tr>
                 <th>Enabled</th>
                 <td>{{ object.enabled }}</td>
               </tr>
+
               <tr>
                 <th>Publish Target Count</th>
                 <td>{{ object.publish_target_count }}</td>
               </tr>
+
             </tbody>
           </table>
         </div>
@@ -162,23 +214,30 @@
         <div class="card-header">
           <strong>Option Data</strong>
         </div>
+
         <div class="card-body">
           {% if object.option_data %}
             <pre class="kea-pre-wrap">{{ object.option_data }}</pre>
           {% else %}
-            <span class="text-muted">No option data configured</span>
+            <span class="text-muted">
+              No option data configured
+            </span>
           {% endif %}
         </div>
       </div>
+
     </div>
 
     <div class="col-md-6">
+
       <div class="card mb-3">
         <div class="card-header">
           <strong>Publish Targets</strong>
         </div>
+
         <div class="card-body p-0">
           <table class="table table-hover mb-0">
+
             <thead>
               <tr>
                 <th>Name</th>
@@ -189,38 +248,64 @@
                 <th>Last Seen</th>
               </tr>
             </thead>
+
             <tbody>
+
               {% for server in publish_targets %}
                 <tr>
+
                   <td>
                     <a href="{% url 'plugins:netbox_kea_ctrl:keaserver' pk=server.pk %}">
                       {{ server.name }}
                     </a>
                   </td>
-                  <td class="kea-wrap">{{ server.api_url }}</td>
+
+                  <td class="kea-wrap">
+                    {{ server.api_url }}
+                  </td>
+
                   <td>{{ server.service }}</td>
-                  <td>{{ server.ha_group|default:"-" }}</td>
-                  <td>{{ server.discovered_server_tag|default:"-" }}</td>
-                  <td>{{ server.last_seen|default:"-" }}</td>
+
+                  <td>
+                    {{ server.ha_group|default:"-" }}
+                  </td>
+
+                  <td>
+                    {{ server.discovered_server_tag|default:"-" }}
+                  </td>
+
+                  <td>
+                    {{ server.last_seen|default:"-" }}
+                  </td>
+
                 </tr>
               {% empty %}
                 <tr>
-                  <td colspan="6">No publish targets resolved</td>
+                  <td colspan="6">
+                    No publish targets resolved
+                  </td>
                 </tr>
               {% endfor %}
+
             </tbody>
           </table>
         </div>
       </div>
+
     </div>
+
   </div>
 
   <div class="card mb-3">
+
     <div class="card-header">
       <strong>Assigned Prefixes</strong>
     </div>
+
     <div class="card-body p-0">
+
       <table class="table table-hover mb-0">
+
         <thead>
           <tr>
             <th>Prefix</th>
@@ -231,75 +316,123 @@
             <th>Action</th>
           </tr>
         </thead>
+
         <tbody>
+
           {% for prefix in assigned_prefixes %}
             <tr>
+
               <td>{{ prefix.prefix }}</td>
-              <td>{{ prefix.vrf|default:"-" }}</td>
-              <td>{{ prefix.status }}</td>
-              <td>{{ prefix.description|default:"-" }}</td>
+
               <td>
+                {{ prefix.vrf|default:"-" }}
+              </td>
+
+              <td>{{ prefix.status }}</td>
+
+              <td>
+                {{ prefix.description|default:"-" }}
+              </td>
+
+              <td>
+
                 {% if prefix.pool_list %}
                   <ul class="mb-0">
+
                     {% for pool in prefix.pool_list %}
                       <li>
+
                         {{ pool.pool_string }}
+
                         <a class="btn btn-sm btn-outline-secondary ms-2"
-                           href="{% url 'plugins:netbox_kea_ctrl:keaprefixpool_edit' pk=object.pk pool_id=pool.pk %}">
+                           href="{% url 'plugins:netbox_kea_ctrl:keaprefixpool_edit' shared_network_pk=object.pk pk=pool.pk %}">
                           Edit
                         </a>
+
                         <form method="post"
                               action="{% url 'plugins:netbox_kea_ctrl:keaprefixpool_remove' pk=object.pk pool_id=pool.pk %}"
                               style="display:inline;">
+
                           {% csrf_token %}
-                          <button type="submit" class="btn btn-sm btn-outline-danger ms-1">
+
+                          <button type="submit"
+                                  class="btn btn-sm btn-outline-danger ms-1">
                             Remove Pool
                           </button>
+
                         </form>
+
                       </li>
                     {% endfor %}
+
                   </ul>
                 {% else %}
-                  <span class="text-muted">No pools</span>
+                  <span class="text-muted">
+                    No pools
+                  </span>
                 {% endif %}
+
               </td>
+
               <td>
+
                 {% if prefix.id %}
                   <div class="d-flex gap-2 flex-wrap">
-                    <a class="btn btn-sm btn-outline-primary"
+
+                    <a role="button"
+                       class="btn btn-sm btn-outline-primary"
                        href="{% url 'plugins:netbox_kea_ctrl:keaprefixpool_add' pk=object.pk prefix_id=prefix.id %}">
                       Add Pool
                     </a>
 
                     <form method="post"
                           action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_push_prefix' pk=object.pk prefix_id=prefix.id %}">
+
                       {% csrf_token %}
-                      <button type="submit" class="btn btn-sm btn-success">
+
+                      <button type="submit"
+                              class="btn btn-sm btn-success">
                         Push
                       </button>
+
                     </form>
 
                     <form method="post"
                           action="{% url 'plugins:netbox_kea_ctrl:keasharednetwork_remove_prefix' pk=object.pk prefix_id=prefix.id %}">
+
                       {% csrf_token %}
-                      <button type="submit" class="btn btn-sm btn-outline-danger">
+
+                      <button type="submit"
+                              class="btn btn-sm btn-outline-danger">
                         Remove Prefix
                       </button>
+
                     </form>
+
                   </div>
                 {% else %}
-                  <span class="text-muted">Unavailable</span>
+                  <span class="text-muted">
+                    Unavailable
+                  </span>
                 {% endif %}
+
               </td>
+
             </tr>
           {% empty %}
             <tr>
-              <td colspan="6">No active managed prefixes assigned</td>
+              <td colspan="6">
+                No active managed prefixes assigned
+              </td>
             </tr>
           {% endfor %}
+
         </tbody>
+
       </table>
+
     </div>
   </div>
+
 </div>
 {% endblock %}
