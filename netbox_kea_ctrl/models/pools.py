@@ -33,16 +33,17 @@ class KeaPrefixPool(NetBoxModel):
 
         errors = {}
 
-        if self.start_address and self.end_address:
-            if IPAddress(self.start_address) > IPAddress(self.end_address):
-                errors["end_address"] = "End address must be greater than or equal to start address."
+        start_ip = IPAddress(self.start_address) if self.start_address else None
+        end_ip = IPAddress(self.end_address) if self.end_address else None
+
+        if start_ip and end_ip and start_ip > end_ip:
+            errors["end_address"] = "End address must be greater than or equal to start address."
 
         if self.prefix:
             network = self.prefix.prefix.network
             broadcast = self.prefix.prefix.broadcast
 
-            if self.start_address:
-                start_ip = IPAddress(self.start_address)
+            if start_ip:
                 if start_ip not in self.prefix.prefix:
                     errors["start_address"] = "Start address must be inside prefix range."
                 elif start_ip == network:
@@ -50,8 +51,7 @@ class KeaPrefixPool(NetBoxModel):
                 elif start_ip == broadcast:
                     errors["start_address"] = "Start address cannot be the broadcast address."
 
-            if self.end_address:
-                end_ip = IPAddress(self.end_address)
+            if end_ip:
                 if end_ip not in self.prefix.prefix:
                     errors["end_address"] = "End address must be inside prefix range."
                 elif end_ip == network:
