@@ -86,11 +86,13 @@ path(
     KeaPrefixPoolCreateView.as_view(),
     name="keaprefixpool_add",
 ),
+
 path(
-    "shared-networks/<int:pk>/pools/<int:pool_id>/edit/",
+    "shared-networks/<int:shared_network_pk>/pools/<int:pk>/edit/",
     KeaPrefixPoolEditView.as_view(),
     name="keaprefixpool_edit",
 ),
+    
 path(
     "shared-networks/<int:pk>/pools/<int:pool_id>/remove/",
     KeaPrefixPoolRemoveView.as_view(),
